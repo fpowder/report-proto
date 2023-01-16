@@ -29,7 +29,7 @@ function getNewToken(oAuth2Client, callback) {
       output: process.stdout,
     })
     rl.question('Enter the code from that page here: ', (code) => {
-      rl.close()
+      rl.close();
       oAuth2Client.getToken(code, (err, token) => {
         if (err) return console.error('Error retrieving access token', err)
         oAuth2Client.setCredentials(token)
@@ -43,7 +43,7 @@ function getNewToken(oAuth2Client, callback) {
   }
 
 function authorize(credentials, callback) {
-    const { client_secret, client_id, redirect_uris } = credentials.installed
+    const { client_secret, client_id, redirect_uris } = credentials.web;
     const oAuth2Client = new google.auth.OAuth2 (client_id, client_secret, redirect_uris[0])
     fs.readFile(TOKEN_PATH, (err, token) => {
       if (err) return getNewToken(oAuth2Client, callback)
@@ -56,18 +56,6 @@ function authorize(credentials, callback) {
     GoogleDrivers = google.drive({ version: 'v3', auth })
     GoogleSheets = google.sheets({ version: 'v4', auth })
   }
-
-  let server = app.listen(3001, function () {
-    let host = server.address().address
-    let port = server.address().port
- 
-    fs.readFile('credentials.json', (err, content) => {
-     if (err) return console.log('[Error] Error loading client secret file:', err)
-     authorize(JSON.parse(content), initialization)
-   })
- 
-    console.log("00. Wait Export Excel Server [%s:%s]", host, port)
- });
 
  app.get('/create-sheet', async(req, res) => {
     const resource = {
@@ -93,4 +81,21 @@ function authorize(credentials, callback) {
         throw err;
     }
 
+
 });
+
+app.get('/oauth2Callback', async(req, res) => {
+    res.status(200).send({message: req.query.code});
+});
+
+let server = app.listen(3000, function () {
+    let host = server.address().address
+    let port = server.address().port
+ 
+    fs.readFile('credentials-web.json', (err, content) => {
+     if (err) return console.log('[Error] Error loading client secret file:', err)
+     authorize(JSON.parse(content), initialization)
+   })
+ 
+    console.log("00. Wait Export Excel Server [%s:%s]", host, port)
+ });
