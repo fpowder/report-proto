@@ -6,7 +6,6 @@ import fs from 'fs';
 import path from 'path';
 
 import { google } from 'googleapis';
-import { allowedNodeEnvironmentFlags } from 'process';
 
 const __dirname = path.resolve();
 
