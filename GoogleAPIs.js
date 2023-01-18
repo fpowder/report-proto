@@ -69,6 +69,7 @@ class GoogleAPIs {
 
     requestNewToken = () => {
         console.log(this.authUrl);
+        return this.authUrl;
         // const result = await axios.get(this.authUrl);
         // console.log('request new token result', result);
     }
