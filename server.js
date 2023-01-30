@@ -17,7 +17,7 @@ app.get('/create-sheet', async (req, res) => {
     console.log(`Spreadsheet ID: ${spreadsheet.data.spreadsheetId}`);
     res.status(200).send({
       message: 'creat sheet complete!',
-      spreadSheetId: spreadsheet.data.spreadSheetId,
+      spreadSheetId: spreadsheet.data.spreadsheetId,
     });
   } catch (err) {
     res.status(400).send({
@@ -48,6 +48,14 @@ app.get('/oauth2Callback', async (req, res) => {
   } catch (err) {
     res.status(400);
   }
+});
+
+// gch-report-test
+/**
+ *  spreadsheetId: 1mpqMu0vULe1yGjuz3vm3PcUFiDfdCOvRZwMW-Y-a4Rs
+ */
+app.get('/chart-io', async(req, res) => {
+
 });
 
 let server = app.listen(3000, function () {

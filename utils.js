@@ -4,20 +4,48 @@ import { scheduleJob } from 'node-schedule';
 
 const { utcToZonedTime, format } = dateFnsTz;
 
-export const getWeekStartEnd = () => {
-    const curr = new Date;
-    console.log('curr', curr);
 
-    const first = curr.getDate() - curr.getDay() + 1;
-    const last = first + 6;
+/**
+ * 매주 월요일이 되자마자 1초를 뺀 후 
+ * 바로 이전주의 시작일과 마지막일 계산
+ * sow -> start of week
+ * eow -> end of week
+ * @param {*} date 
+ * @returns { sow: sowStr, eow: eowStr }
+ */
+export const getWeekStartEnd = (date) => {
+    
+    const timeZone = 'Asia/Seoul';
+    const zonedDate = utcToZonedTime(date, timeZone);
 
-    const firstDay = new Date(curr.setDate(first));
-    const lastDay = new Date(curr.setDate(last));
+    const pattern = 'yyyy-MM-dd HH:mm:ss';
 
-    console.log('firstDay', firstDay );
-    console.log('lastDay', lastDay);
+    const curDate = format(zonedDate, pattern, { timeZone: timeZone });
+    console.log('current Date : ' + curDate);
 
-    const date = new Date();
+    const unixTime = getUnixTime(zonedDate);
+    const subMilliOneSec = getUnixTime(subMilliseconds(zonedDate, 1000));
+
+    console.log('unixTime now : ' + unixTime);
+    console.log('unixTime submilliseconds 1000 : ' + subMilliOneSec);
+
+    console.log(format(fromUnixTime(unixTime), pattern, { timeZone: timeZone }));
+    console.log(format(fromUnixTime(subMilliOneSec), pattern, { timeZone: timeZone }));
+
+    const oneSecFormerDate = fromUnixTime(subMilliOneSec);
+    const sow = startOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
+    const eow = endOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
+
+    const sowStr = format(sow, pattern, { timeZone: timeZone });
+    const eowStr = format(eow, pattern, { timeZone: timeZone });
+
+    console.log('Start of Week : ' + sowStr);
+    console.log('End of Week : ' + eowStr);
+
+    return {
+        sow: sowStr,
+        eow: eowStr
+    }
 }
 
 /** query sample
@@ -41,36 +69,6 @@ export const getWeekStartEnd = () => {
 // getWeekStartEnd();
 
 (() => {
-    // const date = new Date();
-    // const timeZone = 'Asia/Seoul';
-    // const zonedDate = utcToZonedTime(date, timeZone);
-
-    // console.log(zonedDate);
-
-    // const pattern = 'yyyy-MM-dd HH:mm:ss';
-    // // const output = format(zonedDate, pattern, { timeZone: 'Asia/Seoul' });
-    // const output = format(zonedDate, pattern, { timeZone: timeZone });
-
-    // console.log(output);
-
-    // const sow = startOfWeek(zonedDate, { weekStartsOn: 1 });
-    // const eow = endOfWeek(zonedDate, { weekStartsOn: 1 });
-
-    // const sowStr = format(sow, pattern, { timeZone: timeZone });
-    // const eowStr = format(eow, pattern, { timeZone: timeZone });
-
-    // console.log('Start of Week : ' + sowStr);
-    // console.log('End of Week : ' + eowStr);
-
-    // const unixTime = getUnixTime(zonedDate);
-    // const subMilliOneSec = getUnixTime(subMilliseconds(zonedDate, 1000));
-    
-    // console.log('date milliseconds : ' + unixTime);
-    // console.log('date subbilliseconds 1000 milliseconds : ' + subMilliOneSec);
-
-    // console.log(format(fromUnixTime(unixTime), pattern, { timeZone: timeZone }));
-    // console.log(format(fromUnixTime(subMilliOneSec), pattern, { timeZone: timeZone }));
-
     // every Monday check
     scheduleJob('0 0 * * 1', () => {
         const date = new Date();
