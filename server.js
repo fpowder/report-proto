@@ -3,6 +3,9 @@ import { apiInstance } from './GoogleAPIs.js';
 
 const app = express();
 
+const spreadsheetId = '1IyI7QM7QL0fyyoieunbgXuiHS0KXdA9JkQXBhTOiTFE';
+const sheetTitle = 'report';
+
 app.get('/token', (req, res) => {
   const authUrl = apiInstance.setAuthUrl().requestNewToken();
   res.status(200).send({
@@ -56,7 +59,6 @@ app.get('/sheet/create', async (req, res) => {
  *  spreadsheetId: 1mpqMu0vULe1yGjuz3vm3PcUFiDfdCOvRZwMW-Y-a4Rs
  */
 app.get('/sheet/io', async(req, res) => {
-  const spreadsheetId = '1mpqMu0vULe1yGjuz3vm3PcUFiDfdCOvRZwMW-Y-a4Rs';
 
   try {
 
@@ -112,9 +114,56 @@ app.get('/sheet/io', async(req, res) => {
   }
 });
 
+app.get('/set/title', async(req, res) => {
+ /**
+  * ,
+      // 3. write value
+      {
+        range: "시트1!B2:L2",
+        majorDimesion: "ROWS",
+        values: [['보행자 알림이 보고서']]
+      }
+  */
+
+  const values = [
+    ['보행자 알림이 보고서']
+  ];
+
+  const data = [
+    {
+      range: `${sheetTitle}!B2:L2`,
+      majorDimension: "ROWS",
+      values
+    }
+  ];
+
+  const resource = {
+    data,
+    valueInputOption: "RAW"
+  };
+
+  try {
+    const request = {
+      spreadsheetId,
+      resource
+    };
+    const response = await apiInstance.sheets.spreadsheets.values.batchUpdate(request);
+    
+    res.status(200).send({
+      message: response.data
+    });
+
+  } catch(err) {
+    res.status(400).send({
+      message: 'can\'t edit spreadsheet',
+      err: err
+    });
+  }
+});
+
 app.get('/set/frame', async(req, res) => {
 
-  const spreadsheetId = '1mpqMu0vULe1yGjuz3vm3PcUFiDfdCOvRZwMW-Y-a4Rs';
+  
   const range = {
     sheetId: 0,
     startRowIndex: 1,
@@ -128,17 +177,19 @@ app.get('/set/frame', async(req, res) => {
       spreadsheetId: spreadsheetId,
       resource: {
         requests: [
+          // 1. mergecells
           {
             mergeCells: {
               range,
               mergeType: "MERGE_ALL"
             }
           },
+          // 2. set solid border
           {
             updateBorders: {
               range,
               top: {
-                style: 'SOLID_THICK',
+                style: 'SOLID',
                 width: 1,
                 color: {
                   red: 0,
@@ -147,7 +198,7 @@ app.get('/set/frame', async(req, res) => {
                 }
               },
               bottom: {
-                style: 'SOLID_THICK',
+                style: 'SOLID',
                 width: 1,
                 color: {
                   red: 0,
@@ -156,7 +207,7 @@ app.get('/set/frame', async(req, res) => {
                 }
               },
               left: {
-                style: 'SOLID_THICK',
+                style: 'SOLID',
                 width: 1,
                 color: {
                   red: 0,
@@ -165,7 +216,7 @@ app.get('/set/frame', async(req, res) => {
                 }
               },
               right: {
-                style: 'SOLID_THICK',
+                style: 'SOLID',
                 width: 1,
                 color: {
                   red: 0,
@@ -174,7 +225,7 @@ app.get('/set/frame', async(req, res) => {
                 }
               },
               innerHorizontal: {
-                style: 'SOLID_THICK',
+                style: 'SOLID',
                 width: 1,
                 color: {
                   red: 0,
@@ -183,7 +234,32 @@ app.get('/set/frame', async(req, res) => {
                 }
               }
             }
+          },
+          // updateSheetPropertiesRequest
+          /**
+           * change sheet name
+           */
+          {
+            updateSheetProperties: {
+              properties: {
+                sheetId: 0,
+                title: sheetTitle
+              },
+              fields: 'title'
+            }
           }
+          // updateSpreadSheetProperties
+          /**
+           * change spreadsheet file name
+           */
+          // {
+          //   updateSpreadsheetProperties: {
+          //     properties: {
+          //       title: 'gch-report',
+          //     },
+          //     fields: "*"
+          //  }
+          // }
         ]
       }
     }; // request
@@ -200,7 +276,7 @@ app.get('/set/frame', async(req, res) => {
       err: err
     });
   }
-
+                                                                                       
 });
 
 
@@ -234,8 +310,6 @@ app.get('/set/frame', async(req, res) => {
  * 
  */
 app.get('/sheet/info', async(req, res) => {
-
-  const spreadsheetId = '1mpqMu0vULe1yGjuz3vm3PcUFiDfdCOvRZwMW-Y-a4Rs';
 
   try {
 
