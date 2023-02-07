@@ -4,7 +4,6 @@ import { scheduleJob } from 'node-schedule';
 
 const { utcToZonedTime, format } = dateFnsTz;
 
-
 /**
  * 매주 월요일이 되자마자 1초를 뺀 후 
  * 바로 이전주의 시작일과 마지막일 계산
@@ -65,7 +64,19 @@ export const getWeekStartEnd = (date) => {
     order by ins_no, hour asc;
  * 
  */
-
+/**
+ *  select
+        i_ins_no,
+        date_format(illegal_in_time, '%H %p') as hour,
+        count(i_no) as illegal_cnt
+    from
+        illegal_parking_table
+    where
+        illegal_in_time between "2023-01-01 00:00:00" AND "2023-01-07 23:59:59"
+    group by
+        i_ins_no asc, date_format(illegal_in_time, '%H %p')
+    order by i_ins_no, hour asc;
+ */
 // getWeekStartEnd();
 
 (() => {
