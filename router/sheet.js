@@ -6,6 +6,19 @@ const sheetRouter = express.Router();
 
 const spreadsheetId = '1IyI7QM7QL0fyyoieunbgXuiHS0KXdA9JkQXBhTOiTFE';
 const sheetTitle = 'report';
+const sheetId = 0;
+
+const cnt = 14; // 개소 갯수 + 1(통합 데이터셀을 위한 셀 추가)
+
+const startRowIndex = 10; 
+const endRowIndex = startRowIndex + 3;
+const startColumnIndex = 1;
+const endColumnIndex = 2;
+const rowOffset = 9;
+
+const startGraphRowIndex = startRowIndex + (rowOffset * cnt) + 1;
+const endGraphRowIndex = startGraphRowIndex + 3;
+const graphRowOffset = 15;
 
 sheetRouter.get('/create', async (req, res) => {
   const resource = {
@@ -91,7 +104,7 @@ sheetRouter.get('/io', async (req, res) => {
 });
 
 sheetRouter.get('/set/title', async (req, res) => {
-/**
+  /**
     // 3. write value
     {
         range: '시트1!B2:L2',
@@ -341,100 +354,243 @@ sheetRouter.get('/info', async (req, res) => {
   }
 });
 
-sheetRouter.get('/set/frame', async(req, res) => {
+sheetRouter.get('/set/frame', async (req, res) => {
 
-    const startRowIndex = 13, endRowIndex = 16;
-    const startColumnIndex = 1, endColumnIndex = 2;
-    const rowOffset = 3;
+  const requests = [];
 
-    const startGraphRowIndex = 68, endGraphRowIndex = 71;
-    const graphRowOffset = 15;
-
-    const sheetId = 0;
-
-    const insCnt = 13;
-
-    const requests = [];
-
-    // '합계' 입력할 cell merge set
+  // 개소별 현황 테이블을 위한 cell merge (합계 cell 포함)
+  for (let i = 0; i < cnt; i++) {
     requests.push({
-        mergeCells: {
-            range: {
-                sheetId,
-                startRowIndex: 10,
-                endRowIndex: 13,
-                startColumnIndex,
-                endColumnIndex
-            },
-            mergeType: 'MERGE_ALL'
-        }
+      mergeCells: {
+        range: {
+          sheetId,
+          startRowIndex: startRowIndex + (i * rowOffset),
+          endRowIndex: endRowIndex + (i * rowOffset),
+          startColumnIndex,
+          endColumnIndex,
+        },
+        mergeType: 'MERGE_ALL',
+      },
     });
+  }
 
-    // 개소별 현황 테이블을 위한 cell merge
-    for(let i = 0; i < insCnt; i++) {
-        requests.push({
-            mergeCells: {
-                range: {
-                    sheetId,
-                    startRowIndex: startRowIndex + (i * rowOffset),
-                    endRowIndex: endRowIndex + (i * rowOffset),
-                    startColumnIndex,
-                    endColumnIndex
-                },
-                mergeType: 'MERGE_ALL'
-            }
-        });
-    }
-
-    // 합계 통계 그래프용 cell merge
+  // 개소별 통계 그래프용 cell merge (포함)
+  for (let i = 0; i < cnt + 1; i++) {
     requests.push({
-        mergeCells: {
-            range: {
-                sheetId,
-                startRowIndex: 53,
-                endRowIndex: 56,
-                startColumnIndex,
-                endColumnIndex
-            },
-            mergeType: 'MERGE_ALL'
-        }
+      mergeCells: {
+        range: {
+          sheetId,
+          startRowIndex: startGraphRowIndex + (i * graphRowOffset),
+          endRowIndex: endGraphRowIndex + (i * graphRowOffset),
+          startColumnIndex,
+          endColumnIndex,
+        },
+        mergeType: 'MERGE_ALL',
+      },
     });
+  }
 
-    // 개소별 통계 그래프용 cell merge
-    for(let i = 0; i < insCnt; i++) {
-        requests.push({
-            mergeCells: {
-                range: {
-                    sheetId,
-                    startRowIndex: startGraphRowIndex + (i * graphRowOffset),
-                    endRowIndex: endGraphRowIndex + (i * graphRowOffset),
-                    startColumnIndex,
-                    endColumnIndex
+  const request = {
+    spreadsheetId: spreadsheetId,
+    resource: {
+      requests: requests,
+    },
+  };
+
+  try {
+    const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
+
+    res.status(200).send({
+      message: response.data,
+    });
+  } catch (err) {
+    res.status(400).send({
+      message: "can't edit spreadsheet",
+      err: err,
+    });
+  }
+});
+
+sheetRouter.get('/set/border', (req, res) => {
+  const range1 = {};
+
+  const range2 = {};
+});
+
+sheetRouter.get('/chart/test', async (req, res) => {
+  const sheetId = 0;
+  const request = {
+    spreadsheetId,
+    resource: {
+      requests: [
+        {
+          addChart: {
+            chart: {
+              spec: {
+                title: 'Model Q1 Sales',
+                basicChart: {
+                  chartType: 'COLUMN',
+                  legendPosition: 'BOTTOM_LEGEND',
+                  axis: [
+                    {
+                      position: 'BOTTOM_AXIS',
+                      title: 'Model Numbers',
+                    },
+                    {
+                      position: 'LEFT_AXIS',
+                      title: 'Sales',
+                    },
+                  ],
+                  domains: [
+                    {
+                      domain: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 0,
+                              endRowIndex: 7,
+                              startColumnIndex: 0,
+                              endColumnIndex: 1,
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                  series: [
+                    {
+                      series: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 0,
+                              endRowIndex: 7,
+                              startColumnIndex: 1,
+                              endColumnIndex: 2,
+                            },
+                          ],
+                        },
+                      },
+                      targetAxis: 'LEFT_AXIS',
+                    },
+                    {
+                      series: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 0,
+                              endRowIndex: 7,
+                              startColumnIndex: 2,
+                              endColumnIndex: 3,
+                            },
+                          ],
+                        },
+                      },
+                      targetAxis: 'LEFT_AXIS',
+                    },
+                    {
+                      series: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 0,
+                              endRowIndex: 7,
+                              startColumnIndex: 3,
+                              endColumnIndex: 4,
+                            },
+                          ],
+                        },
+                      },
+                      targetAxis: 'LEFT_AXIS',
+                    },
+                    {
+                      series: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 7,
+                              endRowIndex: 14,
+                              startColumnIndex: 1,
+                              endColumnIndex: 2,
+                            },
+                          ],
+                        },
+                      },
+                      targetAxis: 'LEFT_AXIS',
+                    },
+                    {
+                      series: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 7,
+                              endRowIndex: 14,
+                              startColumnIndex: 2,
+                              endColumnIndex: 3,
+                            },
+                          ],
+                        },
+                      },
+                      targetAxis: 'LEFT_AXIS',
+                    },
+                    {
+                      series: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 7,
+                              endRowIndex: 14,
+                              startColumnIndex: 3,
+                              endColumnIndex: 4,
+                            },
+                          ],
+                        },
+                      },
+                      targetAxis: 'LEFT_AXIS',
+                    },
+                  ],
+                  headerCount: 1,
                 },
-                mergeType: 'MERGE_ALL'
-            }
-        });
-    }
+              },
+              position: {
+                overlayPosition: {
+                  anchorCell: {
+                    sheetId,
+                    rowIndex: 9,
+                    columnIndex: 1,
+                  },
+                  offsetXPixels: 0,
+                  offsetYPixels: 0,
+                  widthPixels: 400,
+                  heightPixels: 200,
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+  }; // request
 
-    const request = {
-        spreadsheetId: spreadsheetId,
-        resource: {
-            requests: requests
-        }
-    };
+  try {
+    const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
 
-    try {
-        const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
-
-        res.status(200).send({
-            message: response.data,
-        });
-    } catch(err) {
-        res.status(400).send({
-            message: "can't edit spreadsheet",
-            err: err
-        });
-    }
+    res.status(200).send({
+      message: response.data,
+    });
+  } catch (err) {
+    res.status(400).send({
+      message: "can't edit spreadsheet",
+      err: err,
+    });
+  }
 });
 
 export default sheetRouter;
