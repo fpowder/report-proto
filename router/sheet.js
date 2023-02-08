@@ -369,6 +369,20 @@ sheetRouter.get('/info', async (req, res) => {
 sheetRouter.get('/set/frame', async (req, res) => {
   const requests = [];
 
+  // title cell merge
+  requests.push({
+    mergeCells: {
+      range: {
+        sheetId,
+        startRowIndex: 1,
+        endRowIndex: 2,
+        startColumnIndex: 1,
+        endColumnIndex: 12,
+      },
+      mergeType: 'MERGE_ALL',
+    },
+  });
+
   // 개소별 현황 테이블을 위한 cell merge (합계 cell 포함)
   for (let i = 0; i < cnt; i++) {
     requests.push({
@@ -464,11 +478,27 @@ sheetRouter.get('/set/border', async(req, res) => {
     });
   }
 
+  // 시간별 보행자 및 차량 통행량 불법 주정차 데이터가 들어가는 영역
+  const dataRange = {
+    sheetId,
+    startRowIndex,
+    endRowIndex: endRowIndex + cnt * rowOffset - 4,
+    startColumnIndex: 4,
+    endColumnIndex: 4 + 8
+  }
+
   // requests
   const requests = [];
   requests.push({
     updateBorders: {
       range: systemRange,
+      top, bottom, left, right, innerHorizontal, innerVertical
+    }
+  });
+
+  requests.push({
+    updateBorders: {
+      range: dataRange,
       top, bottom, left, right, innerHorizontal, innerVertical
     }
   });
