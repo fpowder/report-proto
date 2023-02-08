@@ -10,15 +10,67 @@ const sheetId = 0;
 
 const cnt = 14; // 개소 갯수 + 1(통합 데이터셀을 위한 셀 추가)
 
-const startRowIndex = 10; 
-const endRowIndex = startRowIndex + 3;
+const startRowIndex = 9;
+const endRowIndex = startRowIndex + 4;
 const startColumnIndex = 1;
 const endColumnIndex = 2;
-const rowOffset = 9;
+const rowOffset = 12;
 
-const startGraphRowIndex = startRowIndex + (rowOffset * cnt) + 1;
+const startGraphRowIndex = startRowIndex + rowOffset * cnt + 1;
 const endGraphRowIndex = startGraphRowIndex + 3;
 const graphRowOffset = 15;
+
+// border style
+const top = {
+  style: 'SOLID',
+  width: 1,
+  color: {
+    red: 0, blue: 0, green: 0,
+  },
+};
+
+const bottom = {
+  style: 'SOLID',
+  width: 1,
+  color: {
+    red: 0, blue: 0, green: 0,
+  },
+};
+
+const left = {
+  style: 'SOLID',
+  width: 1,
+  color: {
+    red: 0, blue: 0, green: 0,
+  },
+};
+
+const right = {
+  style: 'SOLID',
+  width: 1,
+  color: {
+    red: 0, blue: 0, green: 0,
+  },
+};
+
+const innerHorizontal = {
+  style: 'SOLID',
+  width: 1,
+  color: {
+    red: 0, blue: 0, green: 0,
+  },
+};
+
+const innerVertical = {
+  style: 'SOLID',
+  width: 1,
+  color: {
+    red: 0,
+    blue: 0,
+    green: 0,
+  },
+};
+             
 
 sheetRouter.get('/create', async (req, res) => {
   const resource = {
@@ -148,7 +200,7 @@ sheetRouter.get('/set/title', async (req, res) => {
   }
 });
 
-sheetRouter.get('/cell/center', async (req, res) => {
+sheetRouter.get('/cell/center-border-test', async (req, res) => {
   const range = {
     sheetId: 0,
     startRowIndex: 1,
@@ -158,7 +210,7 @@ sheetRouter.get('/cell/center', async (req, res) => {
   };
 
   const request = {
-    spreadsheetId: spreadsheetId,
+    spreadsheetId,
     resource: {
       requests: [
         {
@@ -217,51 +269,11 @@ sheetRouter.get('/frame-test', async (req, res) => {
           {
             updateBorders: {
               range,
-              top: {
-                style: 'SOLID',
-                width: 1,
-                color: {
-                  red: 0,
-                  blue: 0,
-                  green: 0,
-                },
-              },
-              bottom: {
-                style: 'SOLID',
-                width: 1,
-                color: {
-                  red: 0,
-                  blue: 0,
-                  green: 0,
-                },
-              },
-              left: {
-                style: 'SOLID',
-                width: 1,
-                color: {
-                  red: 0,
-                  blue: 0,
-                  green: 0,
-                },
-              },
-              right: {
-                style: 'SOLID',
-                width: 1,
-                color: {
-                  red: 0,
-                  blue: 0,
-                  green: 0,
-                },
-              },
-              innerHorizontal: {
-                style: 'SOLID',
-                width: 1,
-                color: {
-                  red: 0,
-                  blue: 0,
-                  green: 0,
-                },
-              },
+              top,
+              bottom,
+              left,
+              right,
+              innerHorizontal
             },
           },
           // updateSheetPropertiesRequest
@@ -355,7 +367,6 @@ sheetRouter.get('/info', async (req, res) => {
 });
 
 sheetRouter.get('/set/frame', async (req, res) => {
-
   const requests = [];
 
   // 개소별 현황 테이블을 위한 cell merge (합계 cell 포함)
@@ -364,8 +375,8 @@ sheetRouter.get('/set/frame', async (req, res) => {
       mergeCells: {
         range: {
           sheetId,
-          startRowIndex: startRowIndex + (i * rowOffset),
-          endRowIndex: endRowIndex + (i * rowOffset),
+          startRowIndex: startRowIndex + i * rowOffset,
+          endRowIndex: endRowIndex + i * rowOffset,
           startColumnIndex,
           endColumnIndex,
         },
@@ -375,13 +386,13 @@ sheetRouter.get('/set/frame', async (req, res) => {
   }
 
   // 개소별 통계 그래프용 cell merge (포함)
-  for (let i = 0; i < cnt + 1; i++) {
+  for (let i = 0; i < cnt; i++) {
     requests.push({
       mergeCells: {
         range: {
           sheetId,
-          startRowIndex: startGraphRowIndex + (i * graphRowOffset),
-          endRowIndex: endGraphRowIndex + (i * graphRowOffset),
+          startRowIndex: startGraphRowIndex + i * graphRowOffset,
+          endRowIndex: endGraphRowIndex + i * graphRowOffset,
           startColumnIndex,
           endColumnIndex,
         },
@@ -411,10 +422,94 @@ sheetRouter.get('/set/frame', async (req, res) => {
   }
 });
 
-sheetRouter.get('/set/border', (req, res) => {
-  const range1 = {};
+sheetRouter.get('/set/border', async(req, res) => {
+  // 시스템 점검(상태): 자동수집 할 수 있는 정보 영역
+  const systemRange = {
+    sheetId,
+    startRowIndex: 4,
+    endRowIndex: 7,
+    startColumnIndex: 1,
+    endColumnIndex: 12
+  };
 
-  const range2 = {};
+  // 개소별 현황 시간별 메뉴 영역
+  // const eachTimeRange = {
+  //   sheetId,
+  //   startRowIndex: 9,
+  //   endRowIndex: 10,
+  //   startColumnIndex: 1,
+  //   endColumnIndex: 12,
+  // };
+
+  // 각각 셀 병합된 합계, 개소1, 개소2, ....통행량 카테고리 및 합계영역 , 시간별 영역 포함
+  const mergeRanges = [];
+  for (let i = 0; i < cnt; i++) {
+    mergeRanges.push({
+      sheetId,
+      startRowIndex: startRowIndex + i * rowOffset,
+      endRowIndex: endRowIndex + i * rowOffset,
+      startColumnIndex: 1,
+      endColumnIndex: 1 + 3,
+    });
+  }
+
+  // 그래프 영역
+  for (let i = 0; i < cnt; i++) {
+    mergeRanges.push({
+      sheetId,
+      startRowIndex: startGraphRowIndex + i * graphRowOffset,
+      endRowIndex: endGraphRowIndex + i * graphRowOffset,
+      startColumnIndex: 1,
+      endColumnIndex: 1 + 2,
+    });
+  }
+
+  // requests
+  const requests = [];
+  requests.push({
+    updateBorders: {
+      range: systemRange,
+      top, bottom, left, right, innerHorizontal, innerVertical
+    }
+  });
+
+  // requests.push({
+  //   updateBorders: {
+  //     range: eachTimeRange,
+  //     top, bottom, left, right, innerHorizontal, innerVertical
+  //   },
+  // });
+
+  for(let each of mergeRanges) {
+    requests.push({
+      updateBorders: {
+        range: each,
+        top, bottom, left, right, innerHorizontal, innerVertical
+      }
+    });
+  }
+
+  const request = {
+    spreadsheetId,
+    resource: {
+      requests
+    }
+  }
+
+  try {
+    const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
+
+    res.status(200).send({
+      message: response.data,
+    });
+
+  } catch(err) {
+    res.status(400).send({
+      message: "can't edit spreadsheet",
+      err: err,
+    });
+  }
+
 });
 
 sheetRouter.get('/chart/test', async (req, res) => {
@@ -591,6 +686,73 @@ sheetRouter.get('/chart/test', async (req, res) => {
       err: err,
     });
   }
+});
+
+sheetRouter.get('/cell/center', async(req, res) => {
+  // 1.시스템 점검(상태): 자동수집 정보 영역 텍스트 가운데 정렬 영역 지정
+  const systemRange = {
+    sheetId,
+    startRowIndex: 4,
+    endRowIndex: 7,
+    startColumnIndex: 1,
+    endColumnIndex: 12,
+  };
+
+  // 2.개소별 현황 병합된 셀 부분 텍스트 수평 및 수직 가운데 정렬 영역 지정
+  const insRange = {
+    sheetId,
+    startRowIndex: startRowIndex,
+    endRowIndex: startRowIndex + rowOffset * cnt + 1 + graphRowOffset * cnt + 3,
+    startColumnIndex: 1,
+    endColumnIndex: 2,
+  };
+
+  const request = {
+    spreadsheetId,
+    resource: {
+      requests: [
+        // 1.시스템 점검(상태) 영역 가운데 정렬 설정
+        {
+          repeatCell: {
+            range: systemRange,
+            cell: {
+              userEnteredFormat: {
+                horizontalAlignment: 'CENTER',
+              },
+            },
+            fields: 'userEnteredFormat(horizontalAlignment)',
+          },
+        },
+        // 2.개소별 현황 병합된 셀 영역 요청
+        {
+          repeatCell: {
+            range: insRange,
+            cell: {
+              userEnteredFormat: {
+                horizontalAlignment: 'CENTER',
+                verticalAlignment: 'MIDDLE',
+              },
+            },
+            fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)',
+          },
+        },
+      ],
+    },
+  }; // request
+
+  try {
+    const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
+    res.status(200).send({
+      message: response.data
+    });
+
+  } catch(err) {
+    res.status(400).send({
+      message: 'can\'t centered cell',
+      err: err
+    });
+  }
+
 });
 
 export default sheetRouter;
