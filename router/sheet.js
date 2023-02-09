@@ -1,6 +1,7 @@
 import express from 'express';
 import promisePool from '../config/mariaDBConn.js';
 import { apiInstance } from '../GoogleAPIs.js';
+import { frameReqParams } from '../spreadsheetConf/area.js';
 
 const sheetRouter = express.Router();
 
@@ -366,7 +367,7 @@ sheetRouter.get('/info', async (req, res) => {
   }
 });
 
-sheetRouter.get('/set/frame', async (req, res) => {
+sheetRouter.get('/set/frame/all', async (req, res) => {
   const requests = [];
 
   // title cell merge
@@ -780,6 +781,41 @@ sheetRouter.get('/cell/center', async(req, res) => {
     res.status(400).send({
       message: 'can\'t centered cell',
       err: err
+    });
+  }
+
+});
+
+sheetRouter.get('/set/frame', async(req, res) => {
+  
+  if(!req.query.insNo) {
+    res.status(400).send({
+      message: 'insNo param needed.'
+    });
+    return;
+  }
+
+  const insNo = req.query.insNo;
+
+  const dataMergeCellBorderReq = frameReqParams.category[insNo];
+  const graphMergeCellBorderReq = frameReqParams.graph[insNo];
+
+  const request = {
+    spreadsheetId,
+    resource: {
+      requests: dataMergeCellBorderReq.concat(graphMergeCellBorderReq),
+    },
+  };
+
+  try {
+    const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
+    res.status(200).send({
+      message: response.data,
+    });
+  } catch (err) {
+    res.status(400).send({
+      message: "can't centered cell",
+      err: err,
     });
   }
 
