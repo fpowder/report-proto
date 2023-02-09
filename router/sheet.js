@@ -797,13 +797,15 @@ sheetRouter.get('/set/frame', async(req, res) => {
 
   const insNo = req.query.insNo;
 
-  const dataMergeCellBorderReq = frameReqParams.category[insNo];
-  const graphMergeCellBorderReq = frameReqParams.graph[insNo];
+  const categoryFrameReq = frameReqParams.category[insNo];
+  const graphFrameReq = frameReqParams.graph[insNo];
+  const dataFrameReq = frameReqParams.data[insNo];
+
 
   const request = {
     spreadsheetId,
     resource: {
-      requests: dataMergeCellBorderReq.concat(graphMergeCellBorderReq),
+      requests: categoryFrameReq.concat(graphFrameReq).concat(dataFrameReq),
     },
   };
 

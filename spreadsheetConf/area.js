@@ -85,7 +85,7 @@ const insFrame = {
  * 1. 프레임 (셀 병합 및 범위) 처리 요청
  * 2. 테두리 처리 요청
  */
-const createCategorySheetFrame = () => {
+const createCategoryFrame = () => {
   const apiParams = {};
 
   const insNumbers = Object.keys(insFrame);
@@ -125,7 +125,7 @@ const createCategorySheetFrame = () => {
     };
 
     apiParams[insNumStr] = [mergeCells, updateBorders];
-  }
+  } //for
 
   return apiParams;
 };
@@ -135,7 +135,7 @@ const createCategorySheetFrame = () => {
  * 1. 프레임 (셀 병합 및 범위) 처리 요청
  * 2. 테두리 처리 요청
  */
-const createGraphSheetFrame = () => {
+const createGraphFrame = () => {
   const apiParams = {};
 
   const insNumbers = Object.keys(insFrame);
@@ -158,30 +158,61 @@ const createGraphSheetFrame = () => {
 
     // border solid 스타일 적용 파라메터
     const updateBorders = {
-        updateBorders: {
-            range: {
-            sheetId,
-            startRowIndex: startGraphRowIndex + insNo * graphRowOffset,
-            endRowIndex: endGraphRowIndex + insNo * graphRowOffset,
-            startColumnIndex: 1,
-            endColumnIndex: 1 + 2,
-            },
-            top: border.top,
-            bottom: border.bottom,
-            left: border.left,
-            right: border.right,
-            innerHorizontal: border.innerHorizontal,
-            innerVertical: border.innerVertical,
-            }
-        };
+      updateBorders: {
+        range: {
+          sheetId,
+          startRowIndex: startGraphRowIndex + insNo * graphRowOffset,
+          endRowIndex: endGraphRowIndex + insNo * graphRowOffset,
+          startColumnIndex: 1,
+          endColumnIndex: 1 + 2,
+        },
+        top: border.top,
+        bottom: border.bottom,
+        left: border.left,
+        right: border.right,
+        innerHorizontal: border.innerHorizontal,
+        innerVertical: border.innerVertical,
+      },
+    };
 
     apiParams[insNumStr] = [mergeCells, updateBorders];
-  }
+  } //for
 
   return apiParams;
 };
 
-export const reqParams = {
-  category: createCategorySheetFrame(),
-  graph: createGraphSheetFrame()
+const createDataFrame = () => {
+  const apiParams = {};
+  const insNumbers = Object.keys(insFrame);
+  for (const insNumStr in insNumbers) {
+    const insNo = parseInt(insNumStr);
+
+    const updateBorders = {
+      updateBorders: {
+        range: {
+          sheetId,
+          startRowIndex: startRowIndex + insNo * rowOffset,
+          endRowIndex: startRowIndex + insNo * rowOffset + 12,
+          startColumnIndex: 4,
+          endColumnIndex: 4 + 8,
+        },
+        top: border.top,
+        bottom: border.bottom,
+        left: border.left,
+        right: border.right,
+        innerHorizontal: border.innerHorizontal,
+        innerVertical: border.innerVertical,
+      },
+    };
+
+    apiParams[insNumStr] = [updateBorders];
+  } //for
+
+  return apiParams;
+};
+
+export const frameReqParams = {
+  category: createCategoryFrame(),
+  graph: createGraphFrame(),
+  data: createDataFrame(),
 };
