@@ -1,7 +1,8 @@
 export const cnt = 13;
 
+export const gap = 4;
 export const startRowIndex = 9;
-export const endRowIndex = startRowIndex + 4;
+export const endRowIndex = startRowIndex + gap;
 export const startColumnIndex = 1;
 export const endColumnIndex = 2;
 export const rowOffset = 12;

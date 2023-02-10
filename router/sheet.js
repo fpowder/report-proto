@@ -1,7 +1,7 @@
 import express from 'express';
 import promisePool from '../config/mariaDBConn.js';
 import { apiInstance } from '../GoogleAPIs.js';
-import { frameReqParams } from '../spreadsheetConf/area.js';
+import { reqParams } from '../spreadsheetConf/requests.js';
 
 const sheetRouter = express.Router();
 
@@ -797,9 +797,9 @@ sheetRouter.get('/set/frame', async(req, res) => {
 
   const insNo = req.query.insNo;
 
-  const categoryFrameReq = frameReqParams.category[insNo];
-  const graphFrameReq = frameReqParams.graph[insNo];
-  const dataFrameReq = frameReqParams.data[insNo];
+  const categoryFrameReq = reqParams.category[insNo];
+  const graphFrameReq = reqParams.graph[insNo];
+  const dataFrameReq = reqParams.data[insNo];
 
 
   const request = {
@@ -818,6 +818,38 @@ sheetRouter.get('/set/frame', async(req, res) => {
     res.status(400).send({
       message: "can't centered cell",
       err: err,
+    });
+  }
+
+});
+
+sheetRouter.get('/set/ins/text', async(req, res) => {
+  if(!req.query.insNo) {
+    res.status(400).send({
+      message: 'insNo param needed.'
+    });
+    return;
+  }
+  
+  const insNo = req.query.insNo;
+  const categoryTextReq = reqParams.category[insNo];
+
+  const request = {
+    spreadsheetId,
+    resource: {
+      data: categoryTextReq,
+      valueInputOption: 'RAW'
+    },
+  };
+  try {
+    const response = await apiInstance.sheets.spreadsheets.values.batchUpdate(request);
+    res.status(200).send({
+      message: response.data,
+    });
+  } catch(err) {
+    res.status(400).send({
+      message: 'can\'t insert ins text',
+      err: err
     });
   }
 
