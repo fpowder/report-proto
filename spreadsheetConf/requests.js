@@ -180,6 +180,10 @@ const setTimeRange = () => {
 
 };
 
+/**
+ * 병합된 셀의 수평 및 수직 정렬을 가운데로 함
+ * @returns {{repeatCell: {range: {endColumnIndex: number, endRowIndex: number, sheetId: number, startColumnIndex: number, startRowIndex: number}, cell: {userEnteredFormat: {horizontalAlignment: string, verticalAlignment: string}}, fields: string}}}
+ */
 const centerAlign = () => {
   const range = {
     sheetId,
