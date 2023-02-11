@@ -797,9 +797,9 @@ sheetRouter.get('/set/frame', async(req, res) => {
 
   const insNo = req.query.insNo;
 
-  const categoryFrameReq = reqParams.category[insNo];
-  const graphFrameReq = reqParams.graph[insNo];
-  const dataFrameReq = reqParams.data[insNo];
+  const categoryFrameReq = reqParams.categoryFrame[insNo];
+  const graphFrameReq = reqParams.graphFrame[insNo];
+  const dataFrameReq = reqParams.dataFrame[insNo];
 
 
   const request = {
@@ -832,7 +832,7 @@ sheetRouter.get('/set/ins/text', async(req, res) => {
   }
   
   const insNo = req.query.insNo;
-  const categoryTextReq = reqParams.category[insNo];
+  const categoryTextReq = reqParams.categoryValues[insNo];
 
   const request = {
     spreadsheetId,
@@ -853,6 +853,28 @@ sheetRouter.get('/set/ins/text', async(req, res) => {
     });
   }
 
+});
+
+sheetRouter.get('/set/center', async(req, res) => {
+  const request = {
+    spreadsheetId,
+    resource: {
+      requests: [
+          reqParams.centerAlign
+      ]
+    }
+  }
+  try {
+    const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
+    res.status(200).send({
+      message: response.data
+    });
+  } catch(err) {
+    res.status(400).send({
+      message: 'can\'t center align to range',
+      err: err
+    })
+  }
 });
 
 export default sheetRouter;

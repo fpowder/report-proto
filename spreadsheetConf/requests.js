@@ -151,9 +151,8 @@ const createDataFrame = () => {
 /**
  * 개소 이름 예) 주간 종합,개소 1, 개소 2, ......
  * 데이터 카테고리 : 보행자 통행량, 차량 통행량, 불법주정차
- * 시간별 : 00 ~ 01, 01 ~ 02, 02 ~ 03..... 23 ~ 00   
  */
-const setCategory = () => {
+const setCategoryValues = () => {
     
     const apiParams = {};
     const insNos = Object.keys(insMeta);
@@ -174,14 +173,40 @@ const setCategory = () => {
     return apiParams;
 };
 
+/**
+ * 시간별 : 00 ~ 01, 01 ~ 02, 02 ~ 03..... 23 ~ 00
+ */
 const setTimeRange = () => {
 
 };
 
+const centerAlign = () => {
+  const range = {
+    sheetId,
+    startRowIndex,
+    endRowIndex: startRowIndex + gap * 3 * cnt + 1 + graphRowOffset * cnt + 3,
+    startColumnIndex: 1,
+    endColumnIndex: 2
+  }
+  return {
+    repeatCell: {
+      range,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE'
+        }
+      },
+      fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)'
+    }
+  }
+}
+
 export const reqParams = {
-  category: createCategoryFrame(),
-  graph: createGraphFrame(),
-  data: createDataFrame(),
-  category: setCategory(),
-  timeRange: setTimeRange()
+  categoryFrame: createCategoryFrame(),
+  graphFrame: createGraphFrame(),
+  dataFrame: createDataFrame(),
+  categoryValues: setCategoryValues(),
+  timeRange: setTimeRange(),
+  centerAlign: centerAlign()
 };
