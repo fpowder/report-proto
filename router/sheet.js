@@ -1052,4 +1052,40 @@ sheetRouter.get('/set/menu', async(req, res) => {
   }
 });
 
+sheetRouter.get('/set/collection', async(req, res) => {
+  const sysCollectionReqs = reqParams.systemCollection;
+  const frameReq = sysCollectionReqs.frame;
+  const valueReq = sysCollectionReqs.value;
+
+  const frameRequest = {
+    spreadsheetId,
+    resource: {
+      requests: frameReq
+    }
+  };
+
+  const valueRequest = {
+    spreadsheetId,
+    resource: {
+      data: valueReq,
+      valueInputOption: 'RAW'
+    }
+  }
+
+  try {
+    const frameSetRes = await apiInstance.sheets.spreadsheets.batchUpdate(frameRequest);
+    const valueSetRes = await apiInstance.sheets.spreadsheets.values.batchUpdate(valueRequest);
+
+    res.status(200).send({
+      frameSetRes: frameSetRes.data,
+      valueSetRes: valueSetRes.data,
+    });
+  } catch (err) {
+    res.status(400).send({
+      message: "can't set menu frame and values",
+      err: err,
+    });
+  }
+});
+
 export default sheetRouter;

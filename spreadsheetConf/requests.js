@@ -1,4 +1,4 @@
-import { insMeta, timeRanges, menu } from './area.js';
+import { insMeta, timeRanges, menu, collectionList } from './area.js';
 import { border } from './style.js';
 import {
   cnt,
@@ -391,7 +391,59 @@ const setMenu = () => {
 
 }
 
+/** 
+ * 시스템 점검 (상태)
+ */
+const setSystemCollection = () => {
 
+  const range = {
+    sheetId,
+    startRowIndex: 4,
+    endRowIndex: 7,
+    startColumnIndex: 1,
+    endColumnIndex: 12,
+  };
+
+  const updateBorders = {
+    updateBorders: {
+      range,
+      top: border.top,
+      bottom: border.bottom,
+      left: border.left,
+      right: border.right,
+      innerHorizontal: border.innerHorizontal,
+      innerVertical: border.innerVertical
+    }
+  };
+
+  const repeatCell = {
+    repeatCell: {
+      range,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE',
+          textFormat: {
+            bold: true
+          }
+        }
+      }, // range
+      fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment, textFormat)'
+    }
+  }
+
+  const data = [];
+  data.push({
+    range: `${sheetTitle}!B5:L7`,
+    majorDimension: 'ROWS',
+    values: collectionList
+  });
+
+  return {
+    frame: [updateBorders, repeatCell],
+    value: data
+  }
+}
 
 /**
  * 병합된 셀의 수평 및 수직 정렬을 가운데로 함
@@ -430,5 +482,6 @@ export const reqParams = {
   graphCategoryValues: setGraphCategoryValues,
   title: setTitle(),
   term: setTerm(),
-  menu: setMenu()
+  menu: setMenu(),
+  systemCollection: setSystemCollection()
 };
