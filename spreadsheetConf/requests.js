@@ -469,7 +469,7 @@ const centerAlign = () => {
       },
       fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)',
     },
-  };
+  }; // return
 };
 
 export const reqParams = {
