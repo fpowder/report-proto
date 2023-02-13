@@ -788,18 +788,18 @@ sheetRouter.get('/cell/center', async(req, res) => {
 
 sheetRouter.get('/set/frame', async(req, res) => {
   
-  if(!req.query.insNo) {
+  if(!req.query.positionOrder) {
     res.status(400).send({
-      message: 'insNo param needed.'
+      message: 'positionOrder param needed.'
     });
     return;
   }
 
-  const insNo = req.query.insNo;
+  const positionOrder = parseInt(req.query.positionOrder);
 
-  const categoryFrameReq = reqParams.categoryFrame[insNo];
-  const graphFrameReq = reqParams.graphFrame[insNo];
-  const dataFrameReq = reqParams.dataFrame[insNo];
+  const categoryFrameReq = reqParams.categoryFrame(positionOrder);
+  const graphFrameReq = reqParams.graphFrame(positionOrder);
+  const dataFrameReq = reqParams.dataFrame(positionOrder);
 
 
   const request = {
@@ -824,15 +824,15 @@ sheetRouter.get('/set/frame', async(req, res) => {
 });
 
 sheetRouter.get('/set/ins/text', async(req, res) => {
-  if(!req.query.insNo) {
+  if(!req.query.positionOrder) {
     res.status(400).send({
-      message: 'insNo param needed.'
+      message: 'positionOrder param needed.'
     });
     return;
   }
   
-  const insNo = req.query.insNo;
-  const categoryTextReq = reqParams.categoryValues[insNo];
+  const positionOrder = parseInt(req.query.positionOrder);
+  const categoryTextReq = reqParams.categoryValues(positionOrder);
 
   const request = {
     spreadsheetId,
@@ -860,7 +860,7 @@ sheetRouter.get('/set/center', async(req, res) => {
     spreadsheetId,
     resource: {
       requests: [
-          reqParams.centerAlign
+        reqParams.centerAlign()
       ]
     }
   }
@@ -875,6 +875,39 @@ sheetRouter.get('/set/center', async(req, res) => {
       err: err
     })
   }
+});
+
+sheetRouter.get('/set/time/range', async(req, res) => {
+  if(!req.query.positionOrder) {
+    res.status(400).send({
+      message: 'positionOrder param must be included.'
+    });
+    return;
+  }
+
+  const positionOrder = parseInt(req.query.positionOrder);
+  const timeRangeTextReq = reqParams.timeRangeValues(positionOrder);
+
+  const request = {
+    spreadsheetId,
+    resource: {
+      data: timeRangeTextReq,
+      valueInputOption: 'RAW'
+    }
+  };
+
+  try {
+    const response = await apiInstance.sheets.spreadsheets.values.batchUpdate(request);
+    res.status(200).send({
+      message: response.data
+    });
+  } catch(err) {
+    res.status(400).send({
+      message: 'can\'t set time range on position',
+      err: err
+    });
+  }
+
 });
 
 export default sheetRouter;
