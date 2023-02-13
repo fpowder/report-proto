@@ -1,4 +1,4 @@
-
+import { sheetId } from './properties.js';
 export const insMeta = {
   0: {
     title: '주간 종합',
@@ -104,7 +104,37 @@ export const insMeta = {
 };
 
 export const timeRanges = [
-    ['00 ~ 01', '01 ~ 02', '02 ~ 03', '03 ~ 04', '04 ~ 05', '05 ~ 06', '06 ~ 07', '07 ~ 08'],
-    ['08 ~ 09', '09 ~ 10', '10 ~ 11', '11 ~ 12', '12 ~ 13', '13 ~ 14', '14 ~ 15', '15 ~ 16'],
-    ['16 ~ 17', '17 ~ 18', '18 ~ 19', '19 ~ 20', '20 ~ 21', '21 ~ 22', '22 ~ 23', '23 ~ 24'],
+  ['00 ~ 01', '01 ~ 02', '02 ~ 03', '03 ~ 04', '04 ~ 05', '05 ~ 06', '06 ~ 07', '07 ~ 08'],
+  ['08 ~ 09', '09 ~ 10', '10 ~ 11', '11 ~ 12', '12 ~ 13', '13 ~ 14', '14 ~ 15', '15 ~ 16'],
+  ['16 ~ 17', '17 ~ 18', '18 ~ 19', '19 ~ 20', '20 ~ 21', '21 ~ 22', '22 ~ 23', '23 ~ 24'],
+];
+
+export const menu = {
+  1: {
+    title: '시스템 점검(상태): 자동 수집 정보',
+    sheetRange: 'B4:L4',
+    range: {
+      sheetId,
+      startRowIndex: 3,
+      endRowIndex: 4,
+      startColumnIndex: 1,
+      endColumnIndex: 13
+    }
+  },
+  2: {
+    title: '개소별 현황',
+    sheetRange: 'B9:L9',
+    range: {
+      sheetId,
+      startRowIndex: 8,
+      endRowIndex: 9,
+      startColumnIndex: 1,
+      endColumnIndex: 13 
+    }
+  }
+};
+
+export const collectionList = [
+  ['전광판', 'cctv', '경관조명', '로고젝터'],
+  ['동작중', '동작중', '동작중', '동작중']
 ];

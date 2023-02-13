@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { request } from 'express';
 import promisePool from '../config/mariaDBConn.js';
 import { apiInstance } from '../GoogleAPIs.js';
 import { reqParams } from '../spreadsheetConf/requests.js';
@@ -156,7 +156,7 @@ sheetRouter.get('/io', async (req, res) => {
   }
 });
 
-sheetRouter.get('/set/title', async (req, res) => {
+sheetRouter.get('/set/title-test', async (req, res) => {
   /**
     // 3. write value
     {
@@ -908,6 +908,148 @@ sheetRouter.get('/set/time/range', async(req, res) => {
     });
   }
 
+});
+
+sheetRouter.get('/set/graph/text', async(req, res) => {
+  if(!req.query.positionOrder) {
+    res.status(400).send({
+      message: 'postionOrder param must be incluede.',
+    });
+    return;
+  }
+
+  const positionOrder = parseInt(req.query.positionOrder);
+  const graphCategoryTextReq = reqParams.graphCategoryValues(positionOrder);
+
+  const request = {
+    spreadsheetId,
+    resource: {
+      data: graphCategoryTextReq,
+      valueInputOption: 'RAW'
+    }
+  };
+
+  try {
+    const response = await apiInstance.sheets.spreadsheets.values.batchUpdate(request);
+    res.status(200).send({
+      message: response.data
+    });
+  } catch(err) {
+    res.status(400).send({
+      message: 'can\'t set graph category text',
+
+    });
+  }
+});
+
+sheetRouter.get('/set/title', async(req, res) => {
+
+  const titleReqs = reqParams.title;
+  const frameReq = titleReqs.frame;
+  const valueReq = titleReqs.value;
+  
+  const frameRequest = {
+    spreadsheetId,
+    resource: {
+      requests: frameReq
+    }
+  };
+
+  const valueRequest = {
+    spreadsheetId,
+    resource: {
+      data: valueReq,
+      valueInputOption: 'RAW'
+    }
+  };
+
+  try {
+    const frameSetRes = await apiInstance.sheets.spreadsheets.batchUpdate(frameRequest);
+    const valueSetRes = await apiInstance.sheets.spreadsheets.values.batchUpdate(valueRequest);
+
+    res.status(200).send({
+      frameSetRes: frameSetRes.data,
+      valueSetRes: valueSetRes.data 
+    });
+
+  } catch(err) {
+    res.status(400).send({
+      message: 'can\'t set title',
+      err: err
+    });
+  }
+});
+
+sheetRouter.get('/set/term', async(req, res) => {
+  const termReqs = reqParams.term;
+  const frameReq = termReqs.frame;
+  const valueReq = termReqs.value;
+
+  const frameRequest = {
+    spreadsheetId,
+    resource: {
+      requests: frameReq
+    }
+  };
+
+  const valueRequest = {
+    spreadsheetId,
+    resource: {
+      data: valueReq,
+      valueInputOption: 'RAW'
+    }
+  }
+
+  try {
+    const frameSetRes = await apiInstance.sheets.spreadsheets.batchUpdate(frameRequest);
+    const valueSetRes = await apiInstance.sheets.spreadsheets.values.batchUpdate(valueRequest);
+
+    res.status(200).send({
+      frameSetRes: frameSetRes.data,
+      valueSetRes: valueSetRes.data
+    })
+  } catch(err) {
+    res.status(400).send({
+      message: 'can\'t set term frame and value',
+      err: err``
+    });
+  }
+});
+
+sheetRouter.get('/set/menu', async(req, res) => {
+  const menuReqs = reqParams.menu;
+  const frameReq = menuReqs.frame;
+  const valueReq = menuReqs.value;
+
+  const frameRequest = {
+    spreadsheetId,
+    resource: {
+      requests: frameReq
+    }
+  };
+
+  const valueRequest = {
+    spreadsheetId,
+    resource: {
+      data: valueReq,
+      valueInputOption: 'RAW'
+    }
+  };
+
+  try {
+    const frameSetRes = await apiInstance.sheets.spreadsheets.batchUpdate(frameRequest);
+    const valueSetRes = await apiInstance.sheets.spreadsheets.values.batchUpdate(valueRequest);
+
+    res.status(200).send({
+      frameSetRes: frameSetRes.data,
+      valueSetRes: valueSetRes.data
+    });
+  } catch(err) {
+    res.status(400).send({
+      message: 'can\'t set menu frame and values',
+      err: err
+    });
+  }
 });
 
 export default sheetRouter;

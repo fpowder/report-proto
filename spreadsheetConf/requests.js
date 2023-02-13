@@ -1,4 +1,4 @@
-import { insMeta, timeRanges } from './area.js';
+import { insMeta, timeRanges, menu } from './area.js';
 import { border } from './style.js';
 import {
   cnt,
@@ -13,8 +13,9 @@ import {
   sheetId,
   spreadsheetId,
   sheetTitle,
-  gap
+  gap,
 } from './properties.js';
+import { getWeekStartEndDate } from '../utils.js';
 
 /**
  * 각 개소들의 카테고리 spreadsheet 요청 파라메터
@@ -22,7 +23,6 @@ import {
  * 2. 테두리 처리 요청
  */
 const createCategoryFrame = (positionOrder) => {
-
   // 셀 병합요청 파라메터
   const mergeCells = {
     mergeCells: {
@@ -64,7 +64,6 @@ const createCategoryFrame = (positionOrder) => {
  * 2. 테두리 처리 요청
  */
 const createGraphFrame = (positionOrder) => {
-
   // 셀 병합요청 파라메터
   const mergeCells = {
     mergeCells: {
@@ -102,7 +101,6 @@ const createGraphFrame = (positionOrder) => {
 };
 
 const createDataFrame = (positionOrder) => {
-
   const updateBorders = {
     updateBorders: {
       range: {
@@ -129,34 +127,64 @@ const createDataFrame = (positionOrder) => {
  * 데이터 카테고리 : 보행자 통행량, 차량 통행량, 불법주정차
  */
 const setCategoryValues = (positionOrder) => {
-    
-    const data = [];
-    const basedIndex = startRowIndex + 1 + positionOrder * gap * 3;
-    
-    // 개소 이름
-    const insTitle = insMeta[new String(positionOrder)]?.title ? insMeta[new String(positionOrder)].title : '해당 없음' ;
-    data.push({
-      range: `${sheetTitle}!B${basedIndex}:B${basedIndex + 3}`,
-      majorDimension: 'ROWS',
-      values: [[insTitle]]
-    });
-    
-    // 데이터 수집 카테고리(보행자 통행량, 차량 통행량)
-    const categories = insMeta[new String(positionOrder)]?.category ? insMeta[new String(positionOrder)].category : [[]];
-    data.push({
-      range: `${sheetTitle}!C${basedIndex + 1}:C${basedIndex + 3}`,
-      majorDimension: 'ROWS',
-      values: categories
-    });
+  const data = [];
+  const basedIndex = startRowIndex + 1 + positionOrder * gap * 3;
 
-    // 합계
-    data.push({
-      range: `${sheetTitle}!D${basedIndex}:D${basedIndex}`,
-      majorDimension: 'ROWS',
-      values: [['합계']]
-    });
+  // 개소 이름
+  const insTitle = insMeta[new String(positionOrder)]?.title
+    ? insMeta[new String(positionOrder)].title
+    : '';
+  data.push({
+    range: `${sheetTitle}!B${basedIndex}:B${basedIndex + 3}`,
+    majorDimension: 'ROWS',
+    values: [[insTitle]],
+  });
 
-    return data;
+  // 데이터 수집 카테고리(보행자 통행량, 차량 통행량)
+  const category = insMeta[new String(positionOrder)]?.category
+    ? insMeta[new String(positionOrder)].category
+    : [[]];
+  data.push({
+    range: `${sheetTitle}!C${basedIndex + 1}:C${basedIndex + 3}`,
+    majorDimension: 'ROWS',
+    values: category,
+  });
+
+  // 합계
+  data.push({
+    range: `${sheetTitle}!D${basedIndex}:D${basedIndex}`,
+    majorDimension: 'ROWS',
+    values: [['합계']],
+  });
+
+  return data;
+};
+
+/**
+ *  그래프 영역
+ *  개소 이름 카테고리 텍스트
+ */
+const setGraphCategoryValues = (positionOrder) => {
+  const data = [];
+  const basedIndex = startGraphRowIndex + 1 + positionOrder * graphRowOffset;
+
+  const insTitle = insMeta[new String(positionOrder)]?.title
+    ? insMeta[new String(positionOrder)].title
+    : '';
+  data.push({
+    range: `${sheetTitle}!B${basedIndex}:B${basedIndex + 2}`,
+    majorDimension: 'ROWS',
+    values: [[insTitle]],
+  });
+
+  const category = insMeta[new String(positionOrder)]?.category;
+  data.push({
+    range: `${sheetTitle}!C${basedIndex}:C${basedIndex + 2}`,
+    majorDimension: 'ROWS',
+    values: category,
+  });
+
+  return data;
 };
 
 /**
@@ -169,7 +197,7 @@ const setTimeRangeValues = (positionOrder) => {
   data.push({
     range: `${sheetTitle}!E${basedIndex}:L${basedIndex}`,
     majorDimension: 'ROWS',
-    values: [timeRanges[0]]
+    values: [timeRanges[0]],
   });
 
   data.push({
@@ -187,6 +215,184 @@ const setTimeRangeValues = (positionOrder) => {
   return data;
 };
 
+// 보고서 제목 영역 셀 병합 및 타이틀
+const setTitle = () => {
+  const range = {
+    sheetId,
+    startRowIndex: 1,
+    endRowIndex: 2,
+    startColumnIndex: 1,
+    endColumnIndex: 12,
+  };
+
+  // cell merge and horizontal, vertical center request data
+  const mergeCells = {
+    mergeCells: {
+      range,
+      mergeType: 'MERGE_ALL',
+    },
+  };
+
+  const repeatCell = {
+    repeatCell: {
+      range,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE',
+          textFormat: {
+            bold: true,
+          },
+        },
+      },
+      fields:
+        'userEnteredFormat(textFormat, horizontalAlignment, verticalAlignment)',
+    },
+  };
+
+  // title text request data
+  const data = [];
+  data.push({
+    range: `${sheetTitle}!B2:L2`,
+    majorDimension: 'ROWS',
+    values: [['보행자 알림이 보고서']],
+  });
+
+  return {
+    frame: [mergeCells, repeatCell],
+    value: data,
+  };
+};
+
+/**
+ * 데이터 기간 제목영역 스타일 및 기간삽입 요청
+ */
+const setTerm = () => {
+  const termRange = {
+    sheetId,
+    startRowIndex: 2,
+    endRowIndex: 3,
+    startColumnIndex: 10,
+    endColumnIndex: 12,
+  };
+
+  const categoryRange = {
+    sheetId,
+    startRowIndex: 2,
+    endRowIndex: 3,
+    startColumnIndex: 9,
+    endColumnIndex: 10,
+  };
+
+  const termMergeCells = {
+    mergeCells: {
+      range: termRange,
+      mergeType: 'MERGE_ALL',
+    },
+  };
+
+  const categoryRepeatCell = {
+    repeatCell: {
+      range: categoryRange,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'LEFT',
+          verticalAlignment: 'MIDDLE',
+        },
+      },
+      fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)',
+    },
+  };
+
+  const termRepeatCell = {
+    repeatCell: {
+      range: termRange,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE',
+        },
+      },
+      fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)',
+    },
+  };
+
+  // text request data
+  const data = [];
+  data.push({
+    range: `${sheetTitle}!J3:J3`,
+    majorDimension: 'ROWS',
+    values: [['기간:']],
+  });
+
+  // get current week start, end date
+  const weekStartEndDate = getWeekStartEndDate(new Date());
+
+  data.push({
+    range: `${sheetTitle}!K3:L3`,
+    majorDimension: 'ROWS',
+    values: [[`${weekStartEndDate.sow} ~ ${weekStartEndDate.eow}`]],
+  });
+
+  return {
+    frame: [termMergeCells, categoryRepeatCell, termRepeatCell],
+    value: data,
+  };
+};
+
+/**
+ * 메뉴 셀 병합 및 텍스트 삽입
+ * 1. 시스템 점검
+ * 2. 개소별 현황
+ */
+const setMenu = () => {
+
+  const frame = [];
+  const data = [];
+
+  for(const number in menu) {
+    const mergeCells = {
+      mergeCells: {
+        range: menu[number].range,
+        mergeType: 'MERGE_ALL'
+      }
+    };
+
+    const repeatCell = {
+      repeatCell: {
+        range: menu[number].range,
+        cell: {
+          userEnteredFormat: {
+            horizontalAlignment: 'LEFT',
+            verticalAlignment: 'MIDDLE',
+            textFormat: {
+              bold: true
+            }
+          }
+        },
+        fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment, textFormat)'
+      }
+    };
+
+    frame.push(mergeCells, repeatCell);
+    
+    const title = menu[number].title;
+    data.push({
+      range: `${sheetTitle}!${menu[number].sheetRange}`,
+      majorDimension: 'ROWS',
+      values: [[`${number}. ${title}`]]
+    });
+  } // for
+
+  return {
+    frame: frame,
+    value: data
+  }
+
+}
+
+
+
 /**
  * 병합된 셀의 수평 및 수직 정렬을 가운데로 함
  * @returns {{repeatCell: {range: {endColumnIndex: number, endRowIndex: number, sheetId: number, startColumnIndex: number, startRowIndex: number}, cell: {userEnteredFormat: {horizontalAlignment: string, verticalAlignment: string}}, fields: string}}}
@@ -197,8 +403,8 @@ const centerAlign = () => {
     startRowIndex,
     endRowIndex: startRowIndex + gap * 3 * cnt + 1 + graphRowOffset * cnt + 3,
     startColumnIndex: 1,
-    endColumnIndex: 2
-  }
+    endColumnIndex: 2,
+  };
 
   return {
     repeatCell: {
@@ -206,13 +412,13 @@ const centerAlign = () => {
       cell: {
         userEnteredFormat: {
           horizontalAlignment: 'CENTER',
-          verticalAlignment: 'MIDDLE'
-        }
+          verticalAlignment: 'MIDDLE',
+        },
       },
-      fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)'
-    }
-  }
-}
+      fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)',
+    },
+  };
+};
 
 export const reqParams = {
   categoryFrame: createCategoryFrame,
@@ -220,5 +426,9 @@ export const reqParams = {
   dataFrame: createDataFrame,
   categoryValues: setCategoryValues,
   timeRangeValues: setTimeRangeValues,
-  centerAlign: centerAlign
+  centerAlign: centerAlign,
+  graphCategoryValues: setGraphCategoryValues,
+  title: setTitle(),
+  term: setTerm(),
+  menu: setMenu()
 };

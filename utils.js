@@ -5,6 +5,7 @@ import { scheduleJob } from 'node-schedule';
 const { utcToZonedTime, format } = dateFnsTz;
 const timeZone = 'Asia/Seoul';
 const pattern = 'yyyy-MM-dd HH:mm:ss';
+const datePattern = 'yyyy. MM. dd.';
 
 /**
  * 매주 월요일이 되자마자 1초를 뺀 후 
@@ -18,8 +19,6 @@ export const getWeekStartEnd = (date) => {
     
 
     const zonedDate = utcToZonedTime(date, timeZone);
-
-    const pattern = 'yyyy-MM-dd HH:mm:ss';
 
     const curDate = format(zonedDate, pattern, { timeZone: timeZone });
     console.log('current Date : ' + curDate);
@@ -39,6 +38,46 @@ export const getWeekStartEnd = (date) => {
 
     const sowStr = format(sow, pattern, { timeZone: timeZone });
     const eowStr = format(eow, pattern, { timeZone: timeZone });
+
+    console.log('Start of Week : ' + sowStr);
+    console.log('End of Week : ' + eowStr);
+
+    return {
+        sow: sowStr,
+        eow: eowStr
+    }
+}
+
+/**
+ * 매주 월요일이 되자마자 1초를 뺀 후 
+ * 바로 이전주의 시작일과 마지막일 계산
+ * sow -> start of week
+ * eow -> end of week
+ * @param {*} date 
+ * @returns { sow: sowStr, eow: eowStr }
+ */
+export const getWeekStartEndDate = (date) => {
+    
+    const zonedDate = utcToZonedTime(date, timeZone);
+
+    const curDate = format(zonedDate, datePattern, { timeZone: timeZone });
+    console.log('current Date : ' + curDate);
+
+    const unixTime = getUnixTime(zonedDate);
+    const subMilliOneSec = getUnixTime(subMilliseconds(zonedDate, 1000));
+
+    console.log('unixTime now : ' + unixTime);
+    console.log('unixTime submilliseconds 1000 : ' + subMilliOneSec);
+
+    console.log(format(fromUnixTime(unixTime), datePattern, { timeZone: timeZone }));
+    console.log(format(fromUnixTime(subMilliOneSec), datePattern, { timeZone: timeZone }));
+
+    const oneSecFormerDate = fromUnixTime(subMilliOneSec);
+    const sow = startOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
+    const eow = endOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
+
+    const sowStr = format(sow, datePattern, { timeZone: timeZone });
+    const eowStr = format(eow, datePattern, { timeZone: timeZone });
 
     console.log('Start of Week : ' + sowStr);
     console.log('End of Week : ' + eowStr);
