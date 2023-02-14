@@ -120,33 +120,33 @@ export const getWeekStartEndDate = (date) => {
  */
 // getWeekStartEnd();
 
-(() => {
-    // every Monday check
-    scheduleJob('0 0 * * 7', () => {
-        const date = new Date();
-        const zonedDate = utcToZonedTime(date, timeZone);
+// (() => {
+//     // every Monday check
+//     scheduleJob('0 0 * * 7', () => {
+//         const date = new Date();
+//         const zonedDate = utcToZonedTime(date, timeZone);
 
-        const curDate = format(zonedDate, pattern, { timeZone: timeZone });
-        console.log('current Date : ' + curDate);
+//         const curDate = format(zonedDate, pattern, { timeZone: timeZone });
+//         console.log('current Date : ' + curDate);
 
-        const unixTime = getUnixTime(zonedDate);
-        const subMilliOneSec = getUnixTime(subMilliseconds(zonedDate, 1000));
+//         const unixTime = getUnixTime(zonedDate);
+//         const subMilliOneSec = getUnixTime(subMilliseconds(zonedDate, 1000));
 
-        console.log('unixTime now : ' + unixTime);
-        console.log('unixTime submilliseconds 1000 : ' + subMilliOneSec);
+//         console.log('unixTime now : ' + unixTime);
+//         console.log('unixTime submilliseconds 1000 : ' + subMilliOneSec);
 
-        console.log(format(fromUnixTime(unixTime), pattern, { timeZone: timeZone }));
-        console.log(format(fromUnixTime(subMilliOneSec), pattern, { timeZone: timeZone }));
+//         console.log(format(fromUnixTime(unixTime), pattern, { timeZone: timeZone }));
+//         console.log(format(fromUnixTime(subMilliOneSec), pattern, { timeZone: timeZone }));
 
-        const oneSecFormerDate = fromUnixTime(subMilliOneSec);
-        const sow = startOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
-        const eow = endOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
+//         const oneSecFormerDate = fromUnixTime(subMilliOneSec);
+//         const sow = startOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
+//         const eow = endOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
 
-        const sowStr = format(sow, pattern, { timeZone: timeZone });
-        const eowStr = format(eow, pattern, { timeZone: timeZone });
+//         const sowStr = format(sow, pattern, { timeZone: timeZone });
+//         const eowStr = format(eow, pattern, { timeZone: timeZone });
 
-        console.log('Start of Week : ' + sowStr);
-        console.log('End of Week : ' + eowStr);
+//         console.log('Start of Week : ' + sowStr);
+//         console.log('End of Week : ' + eowStr);
 
-    });
-})();
+//     });
+// })();

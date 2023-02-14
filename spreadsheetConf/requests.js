@@ -154,7 +154,7 @@ const setCategoryValues = (positionOrder) => {
   data.push({
     range: `${sheetTitle}!D${basedIndex}:D${basedIndex}`,
     majorDimension: 'ROWS',
-    values: [['합계']],
+    values: [['종합']],
   });
 
   return data;
@@ -190,29 +190,108 @@ const setGraphCategoryValues = (positionOrder) => {
 /**
  * 시간별 : 00 ~ 01, 01 ~ 02, 02 ~ 03..... 23 ~ 00
  */
-const setTimeRangeValues = (positionOrder) => {
-  const data = [];
-  const basedIndex = startRowIndex + 1 + positionOrder * gap * 3;
+const setTimeRange = (positionOrder) => {
 
+  const basedIndex = startRowIndex + positionOrder * gap * 3;
+
+  // set center
+  const requests = [];
+  const range1 = {
+    sheetId,
+    startRowIndex: basedIndex,
+    endRowIndex: basedIndex + 1,
+    startColumnIndex: 2,
+    endColumnIndex: 12
+  };
+
+  const range2 = {
+    sheetId,
+    startRowIndex: basedIndex + gap,
+    endRowIndex: basedIndex + gap + 1,
+    startColumnIndex: 2,
+    endColumnIndex: 12,
+  };
+  
+  const range3 = {
+    sheetId,
+    startRowIndex: basedIndex + gap * 2,
+    endRowIndex: basedIndex + gap * 2 + 1,
+    startColumnIndex: 2,
+    endColumnIndex: 12,
+  };
+
+  requests.push({
+    repeatCell: {
+      range: range1,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE',
+          textFormat: {
+            bold: true,
+          },
+        },
+      },
+      fields: 'userEnteredFormat(textFormat, horizontalAlignment, verticalAlignment)',
+    },
+  });
+
+  requests.push({
+    repeatCell: {
+      range: range2,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE',
+          textFormat: {
+            bold: true,
+          },
+        },
+      },
+      fields: 'userEnteredFormat(textFormat, horizontalAlignment, verticalAlignment)',
+    },
+  });
+
+  requests.push({
+    repeatCell: {
+      range: range3,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE',
+          textFormat: {
+            bold: true,
+          },
+        },
+      },
+      fields: 'userEnteredFormat(textFormat, horizontalAlignment, verticalAlignment)',
+    },
+  });
+
+  // set time range text
+  const data = [];
   data.push({
-    range: `${sheetTitle}!E${basedIndex}:L${basedIndex}`,
+    range: `${sheetTitle}!E${basedIndex + 1}:L${basedIndex + 1}`,
     majorDimension: 'ROWS',
     values: [timeRanges[0]],
   });
 
   data.push({
-    range: `${sheetTitle}!E${basedIndex + gap}:L${basedIndex + gap * 2}`,
+    range: `${sheetTitle}!E${basedIndex + 1 + gap}:L${basedIndex + 1 + gap}`,
     majorDimension: 'ROWS',
     values: [timeRanges[1]],
   });
 
   data.push({
-    range: `${sheetTitle}!E${basedIndex + gap * 2}:L${basedIndex + gap * 2}`,
+    range: `${sheetTitle}!E${basedIndex + 1 + gap * 2}:L${basedIndex + 1 + gap * 2}`,
     majorDimension: 'ROWS',
     values: [timeRanges[2]],
   });
 
-  return data;
+  return {
+    frame: requests,
+    values: data
+  }; 
 };
 
 // 보고서 제목 영역 셀 병합 및 타이틀
@@ -472,16 +551,43 @@ const centerAlign = () => {
   }; // return
 };
 
+const adjustCell = (dimension, pixelSize, startIndex, endIndex) => {
+  // let endIndex = 
+  //   startRowIndex +
+  //   (startRowIndex * cnt * gap * 3) +
+  //   1 +
+  //   (graphRowOffset * cnt);
+
+  if(dimension === 'COLUMNS') {
+    startIndex = 2;
+    endIndex = 3;
+  }
+
+  const autoResizeDimensions = {
+    autoResizeDimensions: {
+      dimensions: {
+        sheetId,
+        dimension: dimension,
+        startIndex,
+        endIndex
+      },
+    },
+  };
+
+  return autoResizeDimensions;
+}
+
 export const reqParams = {
   categoryFrame: createCategoryFrame,
   graphFrame: createGraphFrame,
   dataFrame: createDataFrame,
   categoryValues: setCategoryValues,
-  timeRangeValues: setTimeRangeValues,
+  timeRange: setTimeRange,
   centerAlign: centerAlign,
   graphCategoryValues: setGraphCategoryValues,
   title: setTitle(),
   term: setTerm(),
   menu: setMenu(),
-  systemCollection: setSystemCollection()
+  systemCollection: setSystemCollection(),
+  adjustCell: adjustCell,
 };
