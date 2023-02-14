@@ -99,7 +99,8 @@ export const createInsWeek = async(insNo) => {
     const eow = '2023-01-07 23:59:59';
 
     /**
-     * 주의 traffic_data의 ins_no는 뻐킹 varchar(2)로 되어있음
+     * 주의 
+     * traffic_data의 ins_no는 뻐킹 varchar(2)로 되어있음
      * illegal_parking_table의 i_ins_no는 int(11)
      */
     const insNoStr = new String(insNo);
@@ -190,6 +191,6 @@ export const createInsWeek = async(insNo) => {
     }
 }
 
-(async() => {
-    await createInsWeek(5);
-})();
+// (async() => {
+//     await createInsWeek(5);
+// })();

@@ -16,6 +16,7 @@ import {
   gap,
 } from './properties.js';
 import { getWeekStartEndDate } from '../utils.js';
+import { createInsWeek, createTotalWeek } from '../spreadSheetData/data.js';
 
 /**
  * 각 개소들의 카테고리 spreadsheet 요청 파라메터
@@ -470,6 +471,77 @@ const setMenu = () => {
 
 }
 
+/**
+ * 데이터 입력 부분 영역 우측 정렬
+ */
+const setDataAlignRight = (positionOrder) => {
+
+  const basedIndex = startRowIndex + positionOrder * gap * 3 + 1;
+  const requests = [];
+  const range1 = {
+    sheetId,
+    startRowIndex: basedIndex,
+    endRowIndex: basedIndex + 3,
+    startColumnIndex: 4,
+    endColumnIndex: 12
+  }
+  const range2 = {
+    sheetId,
+    startRowIndex: basedIndex + gap,
+    endRowIndex: basedIndex + gap + 3,
+    startColumnIndex: 4,
+    endColumnIndex: 12,
+  };
+  const range3 = {
+    sheetId,
+    startRowIndex: basedIndex + gap * 2,
+    endRowIndex: basedIndex + gap * 2 + 3,
+    startColumnIndex: 4,
+    endColumnIndex: 12,
+  };
+
+  requests.push({
+    repeatCell: {
+      range: range1,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'RIGHT',
+          verticalAlignment: 'MIDDLE',
+        }
+      },
+      fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)'
+    }
+  });
+  requests.push({
+    repeatCell: {
+      range: range2,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'RIGHT',
+          verticalAlignment: 'MIDDLE',
+        }
+      },
+      fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)'
+    }
+  });
+  requests.push({
+    repeatCell: {
+      range: range3,
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'RIGHT',
+          verticalAlignment: 'MIDDLE',
+        }
+      },
+      fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)'
+    }
+  });
+
+  return requests;
+
+}
+
+
 /** 
  * 시스템 점검 (상태)
  */
@@ -568,6 +640,56 @@ const adjustCell = (dimension, pixelSize, startIndex, endIndex) => {
   }
 }
 
+const weekTotalData = async () => {
+  const tdDataSet = await createTotalWeek();
+  const positionOrder = 0
+  const basedIndex = startRowIndex + 1 + positionOrder * gap * 3;
+
+  const data = [];
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1}:L${basedIndex + 1 + 2}`,
+    majorDimension: 'ROWS',
+    values: tdDataSet[0]
+  });
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1 + gap}:L${basedIndex + 1 + gap + 2}`,
+    majorDimension: 'ROWS',
+    values: tdDataSet[1]
+  });
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1 + gap * 2}:L${basedIndex + 1 + gap * 2 + 2}`,
+    majorDimension: 'ROWS',
+    values: tdDataSet[2],
+  });
+
+  return data;
+
+}
+
+const weekInsData = async(insNo, positionOrder) => {
+  const tdDataSet = await createInsWeek(insNo);
+  const basedIndex = startRowIndex + 1 + positionOrder * gap * 3;
+
+  const data = [];
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1}:L${basedIndex + 1 + 2}`,
+    majorDimension: 'ROWS',
+    values: tdDataSet[0],
+  });
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1 + gap}:L${basedIndex + 1 + gap + 2}`,
+    majorDimension: 'ROWS',
+    values: tdDataSet[1],
+  });
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1 + gap * 2}:L${basedIndex + 1 + gap * 2 + 2}`,
+    majorDimension: 'ROWS',
+    values: tdDataSet[2],
+  });
+
+  return data;
+}
+
 export const reqParams = {
   categoryFrame: createCategoryFrame,
   graphFrame: createGraphFrame,
@@ -576,9 +698,12 @@ export const reqParams = {
   timeRange: setTimeRange,
   centerAlign: centerAlign,
   graphCategoryValues: setGraphCategoryValues,
+  adjustCell: adjustCell,
+  weekTotalData: weekTotalData,
+  weekInsData: weekInsData,
+  dataAlignRight: setDataAlignRight,
   title: setTitle(),
   term: setTerm(),
   menu: setMenu(),
   systemCollection: setSystemCollection(),
-  adjustCell: adjustCell,
 };
