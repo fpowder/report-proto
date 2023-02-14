@@ -552,29 +552,20 @@ const centerAlign = () => {
 };
 
 const adjustCell = (dimension, pixelSize, startIndex, endIndex) => {
-  // let endIndex = 
-  //   startRowIndex +
-  //   (startRowIndex * cnt * gap * 3) +
-  //   1 +
-  //   (graphRowOffset * cnt);
-
-  if(dimension === 'COLUMNS') {
-    startIndex = 2;
-    endIndex = 3;
-  }
-
-  const autoResizeDimensions = {
-    autoResizeDimensions: {
-      dimensions: {
+  return {
+    updateDimensionProperties: {
+      range: {
         sheetId,
-        dimension: dimension,
+        dimension,
         startIndex,
         endIndex
       },
-    },
-  };
-
-  return autoResizeDimensions;
+      properties: {
+        pixelSize
+      },
+      fields: 'pixelSize'
+    }
+  }
 }
 
 export const reqParams = {

@@ -403,15 +403,17 @@ sheetRouter.get('/set/collection', async(req, res) => {
   }
 });
 
+// http://localhost:3000/sheet/cell/adjust?dimension=columns&pixelSize=120&startIndex=2&endIndex=3
 sheetRouter.get('/cell/adjust', async(req, res) => {
-  if(!req.query.dimension) {
+  const query = req.query;
+  if (!query.dimension || !query.pixelSize || !query.startIndex || !query.endIndex) {
     res.status(400).send({
-      message: 'dimensions parameter is needed'
+      message: 'parameter is missing',
     });
     return;
   }
 
-  const dimension = await req.query.dimension.toUpperCase();
+  const dimension = await query.dimension.toUpperCase();
   if (!(dimension === 'ROWS' || dimension === 'COLUMNS')) {
     res.status(400).send({
       message: 'dimension parameter must be ROWS or COLUMNS',
@@ -419,24 +421,29 @@ sheetRouter.get('/cell/adjust', async(req, res) => {
     return;
   }
 
-  const autoResizeReq = {
+  const request = {
     spreadsheetId,
     resource: {
       requests: [
-        reqParams.autoResize(dimension)
+        reqParams.adjustCell(
+          dimension, 
+          parseInt(query.pixelSize), 
+          parseInt(query.startIndex), 
+          parseInt(query.endIndex)
+        )
       ]
     }
   };
 
   try {
-    const autoResizeRes = await apiInstance.sheets.spreadsheets.batchUpdate(autoResizeReq);
+    const adjustCellRes = await apiInstance.sheets.spreadsheets.batchUpdate(request);
 
     res.status(200).send({
-      message: autoResizeRes.data,
+      message: adjustCellRes.data,
     });
   } catch(err) {
     res.status(400).send({
-      message: `can't auto resize ${dimension}`,
+      message: `can't adjust cell resize ${dimension}`,
       err: err,
     });
   }
