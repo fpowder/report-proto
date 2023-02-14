@@ -10,11 +10,11 @@ export const createTotalWeek = async() => {
     const sow = '2023-01-01 00:00:00';
     const eow = '2023-01-07 23:59:59';
 
-    let tdSql =`
+    let tdSql = `
         SELECT
             T.hour as hour,
-            IFNULL(td.ped_count, 0) as ped_count,
-            IFNULL(td.car_count, 0) as car_count,
+            CAST(IFNULL(td.ped_count, 0) as signed) as ped_count,
+            CAST(IFNULL(td.car_count, 0) as signed) as car_count,
             td.p_density as p_density
         FROM
             (
@@ -51,7 +51,9 @@ export const createTotalWeek = async() => {
                     count(i_no) as illegal_cnt
                 FROM
                     illegal_parking_table
-                WHERE illegal_in_time BETWEEN '${sow}' AND '${eow}'
+                WHERE 
+                    illegal_in_time 
+                BETWEEN '${sow}' AND '${eow}'
                 GROUP BY hour
             ) AS illegal
         ON T.hour = illegal.hour;
@@ -59,28 +61,49 @@ export const createTotalWeek = async() => {
 
     const conn = await promisePool.getConnection();
     try {
-        let [tdRows] = await conn.query(tdSql);
-        let [illegalRows] = await conn.query(illegalSql);
+      let [tdRows] = await conn.query(tdSql);
+      let [illegalRows] = await conn.query(illegalSql);
 
-        const sheetRowData = [];
-        let pedCnt = [];
-        let carCnt = [];
-        let illegalCnt = [];
+      const eachHourData = [];
+      let ped = [], car = [], illegal = [];
+      let pedCnt = 0, carCnt = 0, illegalCnt = 0;
+      /**
+       * make data set like
+       * [
+       *    [
+       *       [....],[....],[....]
+       *    ],
+       *    [
+       *       [....],[....],[....]
+       *    ],
+       *    [
+       *       [....],[....],[....]
+       *    ],
+       * ]
+       */
+      for (let i = 0; i < 24; i++) {
+        // console.log(typeof tdRows[i].ped_count);
+        ped.push(tdRows[i].ped_count);
+        car.push(tdRows[i].car_count);
+        illegal.push(illegalRows[i].illegal_cnt);
 
-        for(let i = 0; i < 24; i++){
-            pedCnt.push(tdRows[i].ped_count);
-            carCnt.push(tdRows[i].car_count);
-            illegalCnt.push(illegalRows[i].illegal_cnt);
-            if((i+1) % 8 === 0){
-                const temp = [];
-                temp.push(pedCnt, carCnt, illegalCnt);
-                sheetRowData.push(temp);
-                pedCnt = []; carCnt = []; illegalCnt = [];
-            }
+        pedCnt += tdRows[i].ped_count;
+        carCnt += tdRows[i].car_count;
+        illegalCnt += illegalRows[i].illegal_cnt;
+
+        // 00 ~ 07, 08 ~ 15, 16 ~ 23 단위로 나눈다.
+        if ((i + 1) % 8 === 0) {
+          const temp = [];
+          temp.push(ped, car, illegal);
+          eachHourData.push(temp);
+          ped = []; car = []; illegal = []; // 초기화
         }
+      }
 
-        return sheetRowData;
-
+      return {
+        hour: eachHourData,
+        total: [[pedCnt], [carCnt], [illegalCnt]]
+    };
     } catch(e) {
         console.log('error occurred on createTotalWeek data for google spreadsheet');
         console.log(e);
@@ -109,8 +132,8 @@ export const createInsWeek = async(insNo) => {
     let tdSql = `
         SELECT
             T.hour as hour,
-            IFNULL(td.ped_count, 0) as ped_count,
-            IFNULL(td.car_count, 0) as car_count,
+            CAST(IFNULL(td.ped_count, 0) as signed) as ped_count,
+            CAST(IFNULL(td.car_count, 0) as signed) as car_count,
             td.p_density as p_density
         FROM
             (
@@ -164,24 +187,24 @@ export const createInsWeek = async(insNo) => {
         let [tdRows] = await conn.query(tdSql);
         let [illegalRows] = await conn.query(illegalSql);
 
-        const sheetRowData = [];
-        let pedCnt = [];
-        let carCnt = [];
-        let illegalCnt = [];
+        const eachHourData = [];
+        let ped = [];
+        let car = [];
+        let illegal = [];
 
         for(let i = 0; i < 24; i++){
-            pedCnt.push(tdRows[i].ped_count);
-            carCnt.push(tdRows[i].car_count);
-            illegalCnt.push(illegalRows[i].illegal_cnt);
+            ped.push(tdRows[i].ped_count);
+            car.push(tdRows[i].car_count);
+            illegal.push(illegalRows[i].illegal_cnt);
             if((i+1) % 8 === 0){
                 const temp = [];
-                temp.push(pedCnt, carCnt, illegalCnt);
-                sheetRowData.push(temp);
-                pedCnt = []; carCnt = []; illegalCnt = [];
+                temp.push(ped, car, illegal);
+                eachHourData.push(temp);
+                ped = []; car = []; illegal = [];
             }
         }
 
-        return sheetRowData;
+        return eachHourData;
 
     } catch(e) {
         console.log('error occurred on createTotalWeek data for google spreadsheet');
