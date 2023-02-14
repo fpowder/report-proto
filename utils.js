@@ -92,31 +92,38 @@ export const getWeekStartEndDate = (date) => {
  * 
     select
         CAST(ins_no AS integer) as ins_no,
-        date_format(uptime, '%H %p') as hour,
+        date_format(uptime, '%H') as hour,
         sum(car_count) as car_count,
-        AVG(p_density) as p_density,
+        ROUND(AVG(p_density), 1) as p_density,
         sum(ped_count) as ped_count
     from
         traffic_data
     WHERE
         uptime between "2023-01-01 00:00:00" AND "2023-01-07 23:59:59"
     group by
-        ins_no asc, date_format(uptime, '%H %p')
+        ins_no asc, date_format(uptime, '%H')
     order by ins_no, hour asc;
  * 
  */
 /**
- *  select
-        i_ins_no,
-        date_format(illegal_in_time, '%H %p') as hour,
-        count(i_no) as illegal_cnt
-    from
-        illegal_parking_table
-    where
-        illegal_in_time between "2023-01-01 00:00:00" AND "2023-01-07 23:59:59"
-    group by
-        i_ins_no asc, date_format(illegal_in_time, '%H %p')
-    order by i_ins_no, hour asc;
+    SELECT
+        T.hour as hour, IFNULL(illegal.illegal_cnt, 0) as illegal_cnt
+    FROM
+        (
+            SELECT @N := @N + 1 AS hour
+            FROM illegal_parking_table, (SELECT @N := -1 from dual) NN LIMIT 24
+        ) AS T
+    LEFT JOIN
+        (
+            SELECT
+                CAST(DATE_FORMAT(illegal_in_time, '%H') as signed) as hour,
+                count(i_no) as illegal_cnt
+            FROM
+                illegal_parking_table
+            WHERE illegal_in_time BETWEEN '2023-01-01 00:00:00' AND '2023-01-07 23:59:59'
+            GROUP BY hour
+        ) AS illegal
+    ON T.hour = illegal.hour;
  */
 // getWeekStartEnd();
 
