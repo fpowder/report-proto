@@ -15,7 +15,7 @@ import {
   sheetTitle,
   gap,
 } from './properties.js';
-import { getWeekStartEndDate } from '../utils.js';
+import { getWeekStartEndDate } from '../common/utils.js';
 import { createInsWeek, createTotalWeek } from '../spreadSheetData/data.js';
 
 /**
@@ -564,7 +564,6 @@ const setDataAlignRight = (positionOrder) => {
 
 }
 
-
 /** 
  * 시스템 점검 (상태)
  */
@@ -730,6 +729,63 @@ const weekInsData = async(insNo, positionOrder) => {
   });
 
   return data;
+}
+
+const lineChart = (orderPosition) => {
+  const data = [];
+
+  const basicIndex = startRowIndex + orderPosition * rowOffset;
+  
+  const chartReq = {
+    addChart: {
+      chart: {
+        spec: {
+          basicChart: {
+            chartType: 'LINE',
+            legendPosition: 'BOTTOM_LEGEND',
+            axis: [
+              {
+                position: 'BOTTOM_AXIS',
+                title: '시간',
+              },
+            ],
+            domains: [
+              {
+                domain: {
+                  sourceRange: {
+                    sources: [
+                      {
+                        sheetId,
+                        startRowIndex: basicIndex,
+                        endRowIndex: basicIndex + insMeta[new String(orderPosition)].category.length,
+                        startColumnIndex: 2,
+                        endColumnIndex: 3
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+            series: [
+              {
+                series: {
+                  sourceRange: {
+                    sources: [
+                      {
+                        sheetId,
+                        startRowIndex: basicIndex,
+                        endRowIndex: 
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+          },
+        },
+      },
+    },
+  };
 }
 
 export const reqParams = {

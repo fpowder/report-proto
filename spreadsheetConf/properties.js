@@ -5,7 +5,7 @@ export const startRowIndex = 9;
 export const endRowIndex = startRowIndex + gap;
 export const startColumnIndex = 1;
 export const endColumnIndex = 2;
-export const rowOffset = 12;
+export const rowOffset = gap * 3;
 
 export const startGraphRowIndex = startRowIndex + rowOffset * cnt + 1;
 export const endGraphRowIndex = startGraphRowIndex + 3;

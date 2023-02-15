@@ -17,7 +17,7 @@ import {
   gap,
   cnt,
 } from '../spreadsheetConf/properties.js';
-import { createBatchReq, createValuesReq } from '../spreadsheetConf/request.js';
+import { createBatchReq, createValuesReq } from '../spreadsheetConf/utils.js';
 
 const sheetRouter = express.Router();
 sheetRouter.get('/cell/center', async (req, res) => {

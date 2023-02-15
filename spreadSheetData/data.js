@@ -1,6 +1,6 @@
 import promisePool from '../config/mariaDBConn.js';
 import { insMeta } from '../spreadsheetConf/area.js';
-import { getWeekStartEnd } from '../utils.js';
+import { getWeekStartEnd } from '../common/utils.js';
 
 export const createTotalWeek = async() => {
 
