@@ -104,7 +104,7 @@ export const createTotalWeek = async() => {
       return {
         hour: eachHourData,
         total: [[pedCnt], [carCnt], [illegalCnt]]
-    };
+      };
     } catch(e) {
         console.log('error occurred on createTotalWeek data for google spreadsheet');
         console.log(e);
@@ -189,36 +189,58 @@ export const createInsWeek = async(insNo) => {
         let [illegalRows] = await conn.query(illegalSql);
 
         const eachHourData = [];
-        let ped = [];
-        let car = [];
-        let illegal = [];
+        let ped = [], pDen = [], car = [], illegal = [];
+        let pedCnt = 0, pDensityAvg = 0.0, carCnt = 0, illegalCnt = 0;
 
-        const iotTtype = insMeta[new String(insNo)].iotType;
+        const iotType = insMeta[new String(insNo)].iotType;
         const illegalParking = insMeta[new String(insNo)].illgelParking; // 불법 주정차 수집여부
 
         for(let i = 0; i < 24; i++){
             
-            // 개소의 iotType에  따라 보행자 점유율 및 보행자 통행량중 선택하여 array push
-            if(iotTtype === 'sad') {
-                ped.push(tdRows[i].p_density);                 
-            } else { // iotType이 svd일 경우
-                ped.push(tdRows[i].ped_count);
-            }
+            pDensityAvg += tdRows[i].p_density;
+            pedCnt += tdRows[i].ped_count;    
+            carCnt += tdRows[i].car_count;
+
+            pDen.push(tdRows[i].p_density);     
+            ped.push(tdRows[i].ped_count);    
             car.push(tdRows[i].car_count);
+            
             // 불법 주정차 데이터를 수집할경우에만 삽입
             if (illegalParking) {
               illegal.push(illegalRows[i].illegal_cnt);
+              illegalCnt += illegalRows[i].illegal_cnt;
             }
 
             if((i+1) % 8 === 0){
                 const temp = [];
-                temp.push(ped, car, illegal);
+                if(iotType === 'sad') {
+                    temp.push(pDen, car, illegal);
+                } else {
+                    temp.push(ped, car, illegal);
+                }
+                
                 eachHourData.push(temp);
-                ped = []; car = []; illegal = [];
+                ped = []; car = []; illegal = []; pDen = [];
             }
-        }
+        } // for
 
-        return eachHourData;
+        return {
+          hour: eachHourData,
+          total: [
+            [
+                (() => {
+                    if(iotType === 'sad') {
+                        return pDensityAvg / 24;
+                    } else {
+                        return pedCnt;
+                    }
+                })()
+            ], 
+            [carCnt], 
+            [illegalCnt]
+          ],
+        };
+
     } catch(e) {
         console.log('error occurred on createTotalWeek data for google spreadsheet');
         console.log(e);

@@ -678,23 +678,33 @@ const weekTotalData = async () => {
 
 const weekInsData = async(insNo, positionOrder) => {
   const tdDataSet = await createInsWeek(insNo);
+
+  const hourDataSet = tdDataSet.hour;
+  const totalDataSet = tdDataSet.total;
+
   const basedIndex = startRowIndex + 1 + positionOrder * gap * 3;
 
   const data = [];
   data.push({
     range: `${sheetTitle}!E${basedIndex + 1}:L${basedIndex + 1 + 2}`,
     majorDimension: 'ROWS',
-    values: tdDataSet[0],
+    values: hourDataSet[0],
   });
   data.push({
     range: `${sheetTitle}!E${basedIndex + 1 + gap}:L${basedIndex + 1 + gap + 2}`,
     majorDimension: 'ROWS',
-    values: tdDataSet[1],
+    values: hourDataSet[1],
   });
   data.push({
     range: `${sheetTitle}!E${basedIndex + 1 + gap * 2}:L${basedIndex + 1 + gap * 2 + 2}`,
     majorDimension: 'ROWS',
-    values: tdDataSet[2],
+    values: hourDataSet[2],
+  });
+  
+  data.push({
+    range: `${sheetTitle}!D${basedIndex + 1}:D${basedIndex + 1 + 2}`,
+    majorDimension: 'ROWS',
+    values: totalDataSet,
   });
 
   return data;
