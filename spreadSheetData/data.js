@@ -1,4 +1,5 @@
 import promisePool from '../config/mariaDBConn.js';
+import { insMeta } from '../spreadsheetConf/area.js';
 import { getWeekStartEnd } from '../utils.js';
 
 export const createTotalWeek = async() => {
@@ -15,7 +16,7 @@ export const createTotalWeek = async() => {
             T.hour as hour,
             CAST(IFNULL(td.ped_count, 0) as signed) as ped_count,
             CAST(IFNULL(td.car_count, 0) as signed) as car_count,
-            td.p_density as p_density
+            CAST(td.p_density as float) as p_density
         FROM
             (
                 SELECT @N := @N + 1 AS hour
@@ -134,7 +135,7 @@ export const createInsWeek = async(insNo) => {
             T.hour as hour,
             CAST(IFNULL(td.ped_count, 0) as signed) as ped_count,
             CAST(IFNULL(td.car_count, 0) as signed) as car_count,
-            td.p_density as p_density
+            CAST(td.p_density as float) as p_density
         FROM
             (
                 SELECT @N := @N + 1 AS hour
@@ -192,10 +193,23 @@ export const createInsWeek = async(insNo) => {
         let car = [];
         let illegal = [];
 
+        const iotTtype = insMeta[new String(insNo)].iotType;
+        const illegalParking = insMeta[new String(insNo)].illgelParking; // 불법 주정차 수집여부
+
         for(let i = 0; i < 24; i++){
-            ped.push(tdRows[i].ped_count);
+            
+            // 개소의 iotType에  따라 보행자 점유율 및 보행자 통행량중 선택하여 array push
+            if(iotTtype === 'sad') {
+                ped.push(tdRows[i].p_density);                 
+            } else { // iotType이 svd일 경우
+                ped.push(tdRows[i].ped_count);
+            }
             car.push(tdRows[i].car_count);
-            illegal.push(illegalRows[i].illegal_cnt);
+            // 불법 주정차 데이터를 수집할경우에만 삽입
+            if (illegalParking) {
+              illegal.push(illegalRows[i].illegal_cnt);
+            }
+
             if((i+1) % 8 === 0){
                 const temp = [];
                 temp.push(ped, car, illegal);
@@ -205,7 +219,6 @@ export const createInsWeek = async(insNo) => {
         }
 
         return eachHourData;
-
     } catch(e) {
         console.log('error occurred on createTotalWeek data for google spreadsheet');
         console.log(e);

@@ -7,54 +7,80 @@ export const insMeta = {
   1: {
     title: '개소 1',
     category: [['보행자 점유율 평균'], ['차량 통행량']],
+    iotType: 'sad',
+    illegalParking: false,
   },
   2: {
     title: '개소 2',
     category: [['보행자 통행량'], ['차량 통행량']],
+    iotType: 'svd',
+    illegalParking: false,
   },
   3: {
     title: '개소 3',
     category: [['보행자 점유율 평균'], ['차량 통행량']],
+    iotType: 'sad',
+    illegalParking: false,
   },
   4: {
     title: '개소 4',
     category: [['보행자 점유율 평균'], ['차량 통행량']],
+    iotType: 'sad',
+    illegalParking: false,
   },
   5: {
     title: '개소 5',
     category: [['보행자 통행량'], ['차량 통행량'], ['불법주정차 수']],
+    iotType: 'svd',
+    illegalParking: true,
   },
   6: {
     title: '개소 6',
     category: [['보행자 통행량'], ['차량 통행량'], ['불법주정차 수']],
+    iotType: 'svd',
+    illegalParking: true,
   },
   7: {
     title: '개소 7',
     category: [['보행자 통행량'], ['차량 통행량']],
+    iotType: 'svd',
+    illegalParking: false,
   },
   8: {
     title: '개소 8',
     category: [['보행자 통행량'], ['차량 통행량']],
+    iotType: 'svd',
+    illegalParking: false,
   },
   9: {
     title: '개소 9',
-    category: [['보행자 통행량'], ['차량 통행량']],
+    category: [['행자 통행량'], ['차량 통행량']],
+    iotType: 'svd',
+    illegalParking: false,
   },
   10: {
-    title: '개소 10',
+    title: '개소 10;',
     category: [['보행자 통행량'], ['차량 통행량']],
+    iotType: 'svd',
+    illegalParking: false,
   },
   11: {
     title: '개소 11',
     category: [['보행자 통행량'], ['차량 통행량']],
+    iotType: 'svd',
+    illegalParking: false,
   },
   12: {
     title: '개소 12',
     category: [['보행자 통행량'], ['차량 통행량']],
+    iotType: 'svd',
+    illegalParking: false,
   },
   13: {
     title: '개소 13',
     category: [['보행자 통행량'], ['차량 통행량']],
+    iotType: 'svd',
+    illegalParking: false,
   },
 };
 
