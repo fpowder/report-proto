@@ -227,17 +227,21 @@ export const createInsWeek = async(insNo) => {
         return {
           hour: eachHourData,
           total: [
-            [
-                (() => {
-                    if(iotType === 'sad') {
-                        return pDensityAvg / 24;
-                    } else {
-                        return pedCnt;
-                    }
-                })()
-            ], 
-            [carCnt], 
-            [illegalCnt]
+            (() => {
+              if (iotType === 'sad') {
+                return [(pDensityAvg / 24).toFixed(1)];
+              } else {
+                return [pedCnt];
+              }
+            })(),
+            [carCnt],
+            (() => {
+              if (illegalParking) {
+                return [illegalCnt];
+              } else {
+                return [];
+              }
+            })(),
           ],
         };
 

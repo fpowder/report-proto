@@ -609,7 +609,7 @@ const centerAlign = () => {
     endColumnIndex: 2,
   };
 
-  return {
+  return [{
     repeatCell: {
       range,
       cell: {
@@ -620,11 +620,11 @@ const centerAlign = () => {
       },
       fields: 'userEnteredFormat(horizontalAlignment, verticalAlignment)',
     },
-  }; // return
+  }]; // return
 };
 
 const adjustCell = (dimension, pixelSize, startIndex, endIndex) => {
-  return {
+  return [{
     updateDimensionProperties: {
       range: {
         sheetId,
@@ -637,7 +637,7 @@ const adjustCell = (dimension, pixelSize, startIndex, endIndex) => {
       },
       fields: 'pixelSize'
     }
-  }
+  }]; // return
 }
 
 const weekTotalData = async () => {
@@ -673,7 +673,6 @@ const weekTotalData = async () => {
   });
 
   return data;
-
 }
 
 const weekInsData = async(insNo, positionOrder) => {
@@ -700,7 +699,7 @@ const weekInsData = async(insNo, positionOrder) => {
     majorDimension: 'ROWS',
     values: hourDataSet[2],
   });
-  
+
   data.push({
     range: `${sheetTitle}!D${basedIndex + 1}:D${basedIndex + 1 + 2}`,
     majorDimension: 'ROWS',
