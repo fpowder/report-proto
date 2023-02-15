@@ -15,3 +15,9 @@ export const border = {
   innerHorizontal: commonSolid,
   innerVertical: commonSolid,
 };
+
+export const timeRangeBgColor = {
+  red: 0.9,
+  blue: 0.9,
+  green: 0.9
+};

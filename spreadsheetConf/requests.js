@@ -1,5 +1,5 @@
 import { insMeta, timeRanges, menu, collectionList } from './area.js';
-import { border } from './style.js';
+import { border, timeRangeBgColor } from './style.js';
 import {
   cnt,
   startRowIndex,
@@ -24,6 +24,7 @@ import { createInsWeek, createTotalWeek } from '../spreadSheetData/data.js';
  * 2. 테두리 처리 요청
  */
 const createCategoryFrame = (positionOrder) => {
+
   // 셀 병합요청 파라메터
   const mergeCells = {
     mergeCells: {
@@ -56,7 +57,25 @@ const createCategoryFrame = (positionOrder) => {
     },
   };
 
-  return [mergeCells, updateBorders];
+  const repeatCell = {
+    repeatCell: {
+      range: {
+        sheetId,
+        startRowIndex: startRowIndex + positionOrder * rowOffset + 1,
+        endRowIndex: endRowIndex + positionOrder * rowOffset,
+        startColumnIndex: 2,
+        endColumnIndex: 2 + 2,
+      },
+      cell: {
+        userEnteredFormat: {
+          verticalAlignment: 'MIDDLE',
+        },
+      },
+      fields: 'userEnteredFormat(verticalAlignment)',
+    },
+  };
+
+  return [mergeCells, updateBorders, repeatCell];
 };
 
 /**
@@ -209,7 +228,7 @@ const setTimeRange = (positionOrder) => {
     sheetId,
     startRowIndex: basedIndex + gap,
     endRowIndex: basedIndex + gap + 1,
-    startColumnIndex: 2,
+    startColumnIndex: 4,
     endColumnIndex: 12,
   };
   
@@ -217,7 +236,7 @@ const setTimeRange = (positionOrder) => {
     sheetId,
     startRowIndex: basedIndex + gap * 2,
     endRowIndex: basedIndex + gap * 2 + 1,
-    startColumnIndex: 2,
+    startColumnIndex: 4,
     endColumnIndex: 12,
   };
 
@@ -228,12 +247,14 @@ const setTimeRange = (positionOrder) => {
         userEnteredFormat: {
           horizontalAlignment: 'CENTER',
           verticalAlignment: 'MIDDLE',
+          backgroundColor: timeRangeBgColor,
           textFormat: {
             bold: true,
           },
         },
       },
-      fields: 'userEnteredFormat(textFormat, horizontalAlignment, verticalAlignment)',
+      fields:
+        'userEnteredFormat(textFormat, backgroundColor, horizontalAlignment, verticalAlignment)',
     },
   });
 
@@ -244,12 +265,13 @@ const setTimeRange = (positionOrder) => {
         userEnteredFormat: {
           horizontalAlignment: 'CENTER',
           verticalAlignment: 'MIDDLE',
+          backgroundColor: timeRangeBgColor,
           textFormat: {
             bold: true,
           },
         },
       },
-      fields: 'userEnteredFormat(textFormat, horizontalAlignment, verticalAlignment)',
+      fields: 'userEnteredFormat(textFormat, backgroundColor, horizontalAlignment, verticalAlignment)',
     },
   });
 
@@ -260,12 +282,13 @@ const setTimeRange = (positionOrder) => {
         userEnteredFormat: {
           horizontalAlignment: 'CENTER',
           verticalAlignment: 'MIDDLE',
+          backgroundColor: timeRangeBgColor,
           textFormat: {
             bold: true,
           },
         },
       },
-      fields: 'userEnteredFormat(textFormat, horizontalAlignment, verticalAlignment)',
+      fields: 'userEnteredFormat(textFormat, backgroundColor, horizontalAlignment, verticalAlignment)',
     },
   });
 
@@ -326,7 +349,7 @@ const setTitle = () => {
         },
       },
       fields:
-        'userEnteredFormat(textFormat, horizontalAlignment, verticalAlignment)',
+        'userEnteredFormat(textFormat, backgroundColor, horizontalAlignment, verticalAlignment)',
     },
   };
 

@@ -582,7 +582,7 @@ sheetRouter.post('/frame-data', async(req, res) => {
     valueData.push(...reqParams.systemCollection.value);
 
     // cell 너비 조정 
-    batchData.push(...reqParams.adjustCell('COLUMNS', 120, 2, 3));
+    batchData.push(...reqParams.adjustCell('COLUMNS', 140, 2, 3));
 
     // 데이터, 그래프, 카테고리셀 프레임설정(테두리 등)
     for (let positionOrder = 0; positionOrder <= cnt; positionOrder++) {
