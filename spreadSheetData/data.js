@@ -229,7 +229,7 @@ export const createInsWeek = async(insNo) => {
           total: [
             (() => {
               if (iotType === 'sad') {
-                return [(pDensityAvg / 24).toFixed(1)];
+                return [parseFloat((pDensityAvg / 24).toFixed(1))];
               } else {
                 return [pedCnt];
               }

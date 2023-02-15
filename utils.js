@@ -1,6 +1,6 @@
 import { startOfWeek, endOfWeek, subMilliseconds, fromUnixTime, getUnixTime } from 'date-fns';
 import dateFnsTz from 'date-fns-tz';
-import { scheduleJob } from 'node-schedule';
+// import { scheduleJob } from 'node-schedule';
 
 const { utcToZonedTime, format } = dateFnsTz;
 const timeZone = 'Asia/Seoul';
@@ -20,17 +20,17 @@ export const getWeekStartEnd = (date) => {
 
     const zonedDate = utcToZonedTime(date, timeZone);
 
-    const curDate = format(zonedDate, pattern, { timeZone: timeZone });
-    console.log('current Date : ' + curDate);
+    // const curDate = format(zonedDate, pattern, { timeZone: timeZone });
+    // console.log('current Date : ' + curDate);
 
-    const unixTime = getUnixTime(zonedDate);
+    // const unixTime = getUnixTime(zonedDate);
     const subMilliOneSec = getUnixTime(subMilliseconds(zonedDate, 1000));
 
-    console.log('unixTime now : ' + unixTime);
-    console.log('unixTime submilliseconds 1000 : ' + subMilliOneSec);
+    // console.log('unixTime now : ' + unixTime);
+    // console.log('unixTime submilliseconds 1000 : ' + subMilliOneSec);
 
-    console.log(format(fromUnixTime(unixTime), pattern, { timeZone: timeZone }));
-    console.log(format(fromUnixTime(subMilliOneSec), pattern, { timeZone: timeZone }));
+    // console.log(format(fromUnixTime(unixTime), pattern, { timeZone: timeZone }));
+    // console.log(format(fromUnixTime(subMilliOneSec), pattern, { timeZone: timeZone }));
 
     const oneSecFormerDate = fromUnixTime(subMilliOneSec);
     const sow = startOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
@@ -39,8 +39,8 @@ export const getWeekStartEnd = (date) => {
     const sowStr = format(sow, pattern, { timeZone: timeZone });
     const eowStr = format(eow, pattern, { timeZone: timeZone });
 
-    console.log('Start of Week : ' + sowStr);
-    console.log('End of Week : ' + eowStr);
+    // console.log('Start of Week : ' + sowStr);
+    // console.log('End of Week : ' + eowStr);
 
     return {
         sow: sowStr,
@@ -60,17 +60,17 @@ export const getWeekStartEndDate = (date) => {
     
     const zonedDate = utcToZonedTime(date, timeZone);
 
-    const curDate = format(zonedDate, datePattern, { timeZone: timeZone });
-    console.log('current Date : ' + curDate);
+    // const curDate = format(zonedDate, datePattern, { timeZone: timeZone });
+    // console.log('current Date : ' + curDate);
 
-    const unixTime = getUnixTime(zonedDate);
+    // const unixTime = getUnixTime(zonedDate);
     const subMilliOneSec = getUnixTime(subMilliseconds(zonedDate, 1000));
 
-    console.log('unixTime now : ' + unixTime);
-    console.log('unixTime submilliseconds 1000 : ' + subMilliOneSec);
+    // console.log('unixTime now : ' + unixTime);
+    // console.log('unixTime submilliseconds 1000 : ' + subMilliOneSec);
 
-    console.log(format(fromUnixTime(unixTime), datePattern, { timeZone: timeZone }));
-    console.log(format(fromUnixTime(subMilliOneSec), datePattern, { timeZone: timeZone }));
+    // console.log(format(fromUnixTime(unixTime), datePattern, { timeZone: timeZone }));
+    // console.log(format(fromUnixTime(subMilliOneSec), datePattern, { timeZone: timeZone }));
 
     const oneSecFormerDate = fromUnixTime(subMilliOneSec);
     const sow = startOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
@@ -79,8 +79,8 @@ export const getWeekStartEndDate = (date) => {
     const sowStr = format(sow, datePattern, { timeZone: timeZone });
     const eowStr = format(eow, datePattern, { timeZone: timeZone });
 
-    console.log('Start of Week : ' + sowStr);
-    console.log('End of Week : ' + eowStr);
+    // console.log('Start of Week : ' + sowStr);
+    // console.log('End of Week : ' + eowStr);
 
     return {
         sow: sowStr,

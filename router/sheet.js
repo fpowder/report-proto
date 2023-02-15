@@ -559,62 +559,74 @@ sheetRouter.get('/set/data/align/right', async (req, res) => {
   }
 });
 
-sheetRouter.post('/frame', async(req, res) => {
-
-  const batchData = [];
-  const valueData = [];
+sheetRouter.post('/frame-data', async(req, res) => {
 
   try {
+    
+    let batchData = [];
+    let valueData = [];
     // set title
-    // await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(reqParams.title.frame));
-    // await apiInstance.sheets.spreadsheets.values.batchUpdate(createValuesReq(reqParams.title.value));
     batchData.push(...reqParams.title.frame);
     valueData.push(...reqParams.title.value);
+
     // set menu
-    // await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(reqParams.menu.frame));
-    // await apiInstance.sheets.spreadsheets.values.batchUpdate(createValuesReq(reqParams.menu.value));
     batchData.push(...reqParams.menu.frame);
     valueData.push(...reqParams.menu.value);
 
     // set term
-    // await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(reqParams.term.frame));
-    // await apiInstance.sheets.spreadsheets.values.batchUpdate(createValuesReq(reqParams.term.value));
     batchData.push(...reqParams.term.frame);
     valueData.push(...reqParams.term.value);
 
     // set collection 1.시스템 점검(상태) 내용 
-    // await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(reqParams.systemCollection.frame));
-    // await apiInstance.sheets.spreadsheets.values.batchUpdate(createValuesReq(reqParams.systemCollection.value));
     batchData.push(...reqParams.systemCollection.frame);
     valueData.push(...reqParams.systemCollection.value);
 
     // cell 너비 조정 
-    // await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(reqParams.adjustCell('COLUMNS', 120, 2, 3)));
     batchData.push(...reqParams.adjustCell('COLUMNS', 120, 2, 3));
 
     // 데이터, 그래프, 카테고리셀 프레임설정(테두리 등)
-    // const frameData = [];
     for (let positionOrder = 0; positionOrder <= cnt; positionOrder++) {
       batchData.push(...reqParams.categoryFrame(positionOrder));
       batchData.push(...reqParams.graphFrame(positionOrder));
       batchData.push(...reqParams.dataFrame(positionOrder));
     }
-    // await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(frameData));
 
     // 개소 이름 및 시간 영역 설정
-    // const valueData = [];
-    // const timeFrameData = [];
     for (let positionOrder = 0; positionOrder <= cnt; positionOrder++) {
-      const timeRangeReqs = reqParams.timeRange(positionOrder);
+      
       valueData.push(...reqParams.categoryValues(positionOrder));
-      valueData.push(...timeRangeReqs.values);
+      valueData.push(...reqParams.graphCategoryValues(positionOrder));
 
+      const timeRangeReqs = reqParams.timeRange(positionOrder);
+      valueData.push(...timeRangeReqs.values);
       batchData.push(...timeRangeReqs.frame);
     }
+
+    // 병합된 개소이름 셀 가운데 및 수직 정렬
+    batchData.push(...reqParams.centerAlign);
 
     await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(batchData));
     await apiInstance.sheets.spreadsheets.values.batchUpdate(createValuesReq(valueData));
 
+    batchData = [];
+    valueData = [];
+
+    // 데이터 영역 오른쪽 정렬 
+    for (let positionOrder = 0; positionOrder <= cnt; positionOrder++) {
+      batchData.push(...reqParams.dataAlignRight(positionOrder));
+    }
+
+    // data insert
+    // 주간 종합 데이터
+    valueData.push(...(await reqParams.weekTotalData()));
+    // 개소별 데이터 1 ~ 13
+    for (let insNo = 1; insNo <= cnt; insNo++){
+      const positionOrder = insNo;
+      valueData.push(...(await reqParams.weekInsData(positionOrder, insNo)));
+    }
+
+    await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(batchData));
+    await apiInstance.sheets.spreadsheets.values.batchUpdate(createValuesReq(valueData));
 
     res.status(200).send({
       message: 'frame set complete'
@@ -622,7 +634,7 @@ sheetRouter.post('/frame', async(req, res) => {
 
   } catch(err) {
     res.status(400).send({
-      message: `can't create report frame`,
+      message: `can't create report frame and data`,
       err: err
     });
   }

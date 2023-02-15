@@ -59,7 +59,7 @@ export const insMeta = {
     illegalParking: false,
   },
   10: {
-    title: '개소 10;',
+    title: '개소 10',
     category: [['보행자 통행량'], ['차량 통행량']],
     iotType: 'svd',
     illegalParking: false,
