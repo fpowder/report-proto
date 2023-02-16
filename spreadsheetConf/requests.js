@@ -751,17 +751,17 @@ const lineChart = (positionOrder) => {
         spec: {
           title: '',
           basicChart: {
-            chartType: 'COLUMN',
+            chartType: 'LINE',
             legendPosition: 'BOTTOM_LEGEND',
             axis: [
               {
                 position: 'BOTTOM_AXIS',
-                title: '시간',
+                title: '시간 별',
               },
-              {
-                position: 'LEFT_AXIS',
-                title: 'title1',
-              },
+              // {
+              //   position: 'LEFT_AXIS',
+              //   title: 'title1',
+              // },
             ],
             domains: [
               {
@@ -771,9 +771,23 @@ const lineChart = (positionOrder) => {
                       {
                         sheetId,
                         startRowIndex: basicIndex,
-                        endRowIndex: basicIndex + insMeta[new String(insNo)].category.length,
-                        startColumnIndex: 2,
-                        endColumnIndex: 3,
+                        endRowIndex: basicIndex + 1,
+                        startColumnIndex: 3,
+                        endColumnIndex: 12,
+                      },
+                      {
+                        sheetId,
+                        startRowIndex: basicIndex + gap,
+                        endRowIndex: basicIndex + gap + 1,
+                        startColumnIndex: 4,
+                        endColumnIndex: 12,
+                      },
+                      {
+                        sheetId,
+                        startRowIndex: basicIndex + gap * 2,
+                        endRowIndex: basicIndex + gap * 2 + 1,
+                        startColumnIndex: 4,
+                        endColumnIndex: 12,
                       },
                     ],
                   },
