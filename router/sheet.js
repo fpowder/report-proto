@@ -612,7 +612,8 @@ sheetRouter.post('/frame-data', async(req, res) => {
     valueData.push(...reqParams.systemCollection.value);
 
     // cell 너비 조정 
-    batchData.push(...reqParams.adjustCell('COLUMNS', 140, 2, 3));
+    batchData.push(...reqParams.adjustCell('COLUMNS', 147, 2, 3));
+    batchData.push(...reqParams.adjustCell('COLUMNS', 125, 3, 4));
 
     // 데이터, 그래프, 카테고리셀 프레임설정(테두리 등)
     for (let positionOrder = 0; positionOrder <= cnt; positionOrder++) {
@@ -652,7 +653,7 @@ sheetRouter.post('/frame-data', async(req, res) => {
     // 개소별 데이터 1 ~ 13
     for (let insNo = 1; insNo <= cnt; insNo++){
       const positionOrder = insNo;
-      valueData.push(...(await reqParams.weekInsData(positionOrder, insNo)));
+      valueData.push(...(await reqParams.weekInsData(insNo, positionOrder)));
     }
 
     await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(batchData));

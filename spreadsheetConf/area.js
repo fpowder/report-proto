@@ -99,7 +99,7 @@ export const menu = {
       startRowIndex: 3,
       endRowIndex: 4,
       startColumnIndex: 1,
-      endColumnIndex: 13
+      endColumnIndex: 12
     }
   },
   2: {
@@ -110,7 +110,7 @@ export const menu = {
       startRowIndex: 8,
       endRowIndex: 9,
       startColumnIndex: 1,
-      endColumnIndex: 13 
+      endColumnIndex: 12 
     }
   }
 };

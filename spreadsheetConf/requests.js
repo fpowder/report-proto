@@ -166,16 +166,22 @@ const setCategoryValues = (positionOrder) => {
     ? insMeta[new String(positionOrder)].category
     : [[]];
   data.push({
-    range: `${sheetTitle}!C${basedIndex + 1}:C${basedIndex + 3}`,
+    range: `${sheetTitle}!D${basedIndex + 1}:D${basedIndex + 3}`,
     majorDimension: 'ROWS',
     values: category,
   });
 
-  // 합계
+  // 종합 text
+  data.push({
+    range: `${sheetTitle}!C${basedIndex}:C${basedIndex}`,
+    majorDimension: 'ROWS',
+    values: [['종합']],
+  });
+
   data.push({
     range: `${sheetTitle}!D${basedIndex}:D${basedIndex}`,
     majorDimension: 'ROWS',
-    values: [['종합']],
+    values: [['시간별']],
   });
 
   return data;
@@ -690,7 +696,7 @@ const weekTotalData = async () => {
   });
 
   data.push({
-    range: `${sheetTitle}!D${basedIndex + 1}:D${basedIndex + 1 + 2}`,
+    range: `${sheetTitle}!C${basedIndex + 1}:C${basedIndex + 1 + 2}`,
     majorDimension: 'ROWS',
     values: totalDataSet,
   });
@@ -724,7 +730,7 @@ const weekInsData = async(insNo, positionOrder) => {
   });
 
   data.push({
-    range: `${sheetTitle}!D${basedIndex + 1}:D${basedIndex + 1 + 2}`,
+    range: `${sheetTitle}!C${basedIndex + 1}:C${basedIndex + 1 + 2}`,
     majorDimension: 'ROWS',
     values: totalDataSet,
   });
