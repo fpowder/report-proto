@@ -559,8 +559,38 @@ sheetRouter.get('/set/data/align/right', async (req, res) => {
   }
 });
 
-sheetRouter.post('/frame-data', async(req, res) => {
+// line chart create test
+sheetRouter.get('/line', async(req, res) => {
+  if(!req.query.positionOrder) {
+    res.status(400).send({
+      message: `positionOrder param must be included`
+    });
+    return;
+  }
 
+  try {
+    const positionOrder = parseInt(req.query.positionOrder);
+    const request = {
+      spreadsheetId,
+      resource: {
+        requests: reqParams.lineChart(positionOrder)
+      }
+    }
+    const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
+
+    res.status(200).send({
+      message: 'line chart complete',
+      response: response.data
+    });
+  } catch(err) {
+    res.status(400).send({
+      message: `can't create line chart`,
+      err: err
+    });
+  }
+});
+
+sheetRouter.post('/frame-data', async(req, res) => {
   try {
     
     let batchData = [];
@@ -640,5 +670,416 @@ sheetRouter.post('/frame-data', async(req, res) => {
   }
 
 });
+
+// sheetRouter.get('/chart/test', async (req, res) => {
+//   const sheetId = 0;
+//   const request = {
+//     spreadsheetId,
+//     resource: {
+//       requests: [
+//         {
+//           addChart: {
+//             chart: {
+//               spec: {
+//                 title: 'Model Q1 Sales',
+//                 basicChart: {
+//                   chartType: 'LINE',
+//                   legendPosition: 'BOTTOM_LEGEND',
+//                   axis: [
+//                     {
+//                       position: 'LEFT_AXIS',
+//                       title: 'Model Numbers',
+//                     },
+//                     {
+//                       position: 'BOTTOM_AXIS',
+//                       title: 'Sales',
+//                     },
+//                   ],
+//                   domains: [
+//                     {
+//                       domain: {
+//                         sourceRange: {
+//                           sources: [
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 0,
+//                               endRowIndex: 7,
+//                               startColumnIndex: 0,
+//                               endColumnIndex: 1,
+//                             },
+//                           ],
+//                         },
+//                       },
+//                     },
+//                   ],
+//                   series: [
+//                     {
+//                       series: {
+//                         sourceRange: {
+//                           sources: [
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 0,
+//                               endRowIndex: 7,
+//                               startColumnIndex: 1,
+//                               endColumnIndex: 2,
+//                             },
+//                           ],
+//                         },
+//                       },
+//                       targetAxis: 'LEFT_AXIS',
+//                     },
+//                     {
+//                       series: {
+//                         sourceRange: {
+//                           sources: [
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 0,
+//                               endRowIndex: 7,
+//                               startColumnIndex: 2,
+//                               endColumnIndex: 3,
+//                             },
+//                           ],
+//                         },
+//                       },
+//                       targetAxis: 'LEFT_AXIS',
+//                     },
+//                     {
+//                       series: {
+//                         sourceRange: {
+//                           sources: [
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 0,
+//                               endRowIndex: 7,
+//                               startColumnIndex: 3,
+//                               endColumnIndex: 4,
+//                             },
+//                           ],
+//                         },
+//                       },
+//                       targetAxis: 'LEFT_AXIS',
+//                     },
+//                     {
+//                       series: {
+//                         sourceRange: {
+//                           sources: [
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 7,
+//                               endRowIndex: 14,
+//                               startColumnIndex: 1,
+//                               endColumnIndex: 2,
+//                             },
+//                           ],
+//                         },
+//                       },
+//                       targetAxis: 'LEFT_AXIS',
+//                     },
+//                     {
+//                       series: {
+//                         sourceRange: {
+//                           sources: [
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 7,
+//                               endRowIndex: 14,
+//                               startColumnIndex: 2,
+//                               endColumnIndex: 3,
+//                             },
+//                           ],
+//                         },
+//                       },
+//                       targetAxis: 'LEFT_AXIS',
+//                     },
+//                     {
+//                       series: {
+//                         sourceRange: {
+//                           sources: [
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 7,
+//                               endRowIndex: 14,
+//                               startColumnIndex: 3,
+//                               endColumnIndex: 4,
+//                             },
+//                           ],
+//                         },
+//                       },
+//                       targetAxis: 'LEFT_AXIS',
+//                     },
+//                   ],
+//                   headerCount: 1,
+//                 },
+//               },
+//               position: {
+//                 overlayPosition: {
+//                   anchorCell: {
+//                     sheetId,
+//                     rowIndex: 9,
+//                     columnIndex: 1,
+//                   },
+//                   offsetXPixels: 0,
+//                   offsetYPixels: 0,
+//                   widthPixels: 400,
+//                   heightPixels: 200,
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       ],
+//     },
+//   }; // request
+
+//   try {
+//     const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
+
+//     res.status(200).send({
+//       message: response.data,
+//     });
+//   } catch (err) {
+//     res.status(400).send({
+//       message: "can't edit spreadsheet",
+//       err: err,
+//     });
+//   }
+// });
+
+// sheetRouter.get('/chart/test', async (req, res) => {
+//   const sheetId = 0;
+//   const request = {
+//     spreadsheetId,
+//     resource: {
+//       requests: [
+//         {
+//           addChart: {
+//             chart: {
+//               spec: {
+//                 title: 'Model Q1 Sales',
+//                 basicChart: {
+//                   chartType: 'LINE',
+//                   legendPosition: 'BOTTOM_LEGEND',
+//                   axis: [
+//                     {
+//                       position: 'BOTTOM_AXIS',
+//                       title: 'Model Numbers',
+//                     },
+//                     {
+//                       position: 'LEFT_AXIS',
+//                       title: 'Sales',
+//                     },
+//                   ],
+//                   domains: [
+//                     {
+//                       domain: {
+//                         sourceRange: {
+//                           sources: [
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 0,
+//                               endRowIndex: 1,
+//                               startColumnIndex: 0,
+//                               endColumnIndex: 5,
+//                             },
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 7,
+//                               endRowIndex: 8,
+//                               startColumnIndex: 2,
+//                               endColumnIndex: 5,
+//                             },
+//                           ],
+//                         },
+//                       },
+//                     },
+//                   ],
+//                   series: [
+//                     {
+//                       series: {
+//                         sourceRange: {
+//                           sources: [
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 1,
+//                               endRowIndex: 2,
+//                               startColumnIndex: 0,
+//                               endColumnIndex: 5,
+//                             },
+//                             {
+//                               sheetId: sheetId,
+//                               startRowIndex: 8,
+//                               endRowIndex: 9,
+//                               startColumnIndex: 2,
+//                               endColumnIndex: 5,
+//                             },
+//                           ],
+//                         },
+//                       },
+//                       targetAxis: 'LEFT_AXIS',
+//                     },
+//                   ],
+//                   headerCount: 1,
+//                 },
+//               },
+//               position: {
+//                 overlayPosition: {
+//                   anchorCell: {
+//                     sheetId,
+//                     rowIndex: 9,
+//                     columnIndex: 1,
+//                   },
+//                   offsetXPixels: 0,
+//                   offsetYPixels: 0,
+//                   widthPixels: 400,
+//                   heightPixels: 200,
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       ], // requests
+//     },
+//   }; // request
+
+//   try {
+//     const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
+
+//     res.status(200).send({
+//       message: response.data,
+//     });
+//   } catch (err) {
+//     res.status(400).send({
+//       message: "can't edit spreadsheet",
+//       err: err,
+//     });
+//   }
+// });
+
+sheetRouter.get('/chart/test', async (req, res) => {
+  const sheetId = 0;
+  const request = {
+    spreadsheetId,
+    resource: {
+      requests: [
+        {
+          addChart: {
+            chart: {
+              spec: {
+                title: 'Model Q1 Sales',
+                basicChart: {
+                  chartType: 'LINE',
+                  legendPosition: 'BOTTOM_LEGEND',
+                  axis: [
+                    {
+                      position: 'BOTTOM_AXIS',
+                      title: 'Model Numbers',
+                    },
+                    {
+                      position: 'LEFT_AXIS',
+                      title: 'Sales',
+                    },
+                  ],
+                  domains: [
+                    {
+                      domain: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 0,
+                              endRowIndex: 1,
+                              startColumnIndex: 0,
+                              endColumnIndex: 5,
+                            },
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 7,
+                              endRowIndex: 8,
+                              startColumnIndex: 2,
+                              endColumnIndex: 5,
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                  series: [
+                    {
+                      series: {
+                        sourceRange: {
+                          sources: [
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 1,
+                              endRowIndex: 2,
+                              startColumnIndex: 0,
+                              endColumnIndex: 5,
+                            },
+                            {
+                              sheetId: sheetId,
+                              startRowIndex: 8,
+                              endRowIndex: 9,
+                              startColumnIndex: 2,
+                              endColumnIndex: 5,
+                            },
+                          ],
+                        },
+                      },
+                      targetAxis: 'LEFT_AXIS',
+                    },
+                  ],
+                  headerCount: 1,
+                },
+                filterSpecs: [
+                  {
+                    columnIndex: 1,
+                    filterCriteria: {
+                      hiddenValues: [],
+                    },
+                  },
+                  // {
+                  //   columnIndex: 3,
+                  //   filterCriteria: {
+                  //     visibleValues: [],
+                  //   },
+                  // },
+                ],
+              },
+              position: {
+                overlayPosition: {
+                  anchorCell: {
+                    sheetId,
+                    rowIndex: 9,
+                    columnIndex: 1,
+                  },
+                  offsetXPixels: 0,
+                  offsetYPixels: 0,
+                  widthPixels: 400,
+                  heightPixels: 200,
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+  }; // request
+
+  try {
+    const response = await apiInstance.sheets.spreadsheets.batchUpdate(request);
+
+    res.status(200).send({
+      message: response.data,
+    });
+  } catch (err) {
+    res.status(400).send({
+      message: "can't edit spreadsheet",
+      err: err,
+    });
+  }
+});
+
 
 export default sheetRouter;

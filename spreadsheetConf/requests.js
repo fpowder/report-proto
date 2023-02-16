@@ -17,6 +17,7 @@ import {
 } from './properties.js';
 import { getWeekStartEndDate } from '../common/utils.js';
 import { createInsWeek, createTotalWeek } from '../spreadSheetData/data.js';
+import { createSeries } from './utils.js';
 
 /**
  * 각 개소들의 카테고리 spreadsheet 요청 파라메터
@@ -731,22 +732,29 @@ const weekInsData = async(insNo, positionOrder) => {
   return data;
 }
 
-const lineChart = (orderPosition) => {
+const lineChart = (positionOrder) => {
   const data = [];
 
-  const basicIndex = startRowIndex + orderPosition * rowOffset;
-  
+  const basicIndex = startRowIndex + positionOrder * rowOffset;
+  const basicGraphIndex = startGraphRowIndex + positionOrder * graphRowOffset;
+  const insNo = positionOrder;
+
   const chartReq = {
     addChart: {
       chart: {
         spec: {
+          title: '',
           basicChart: {
-            chartType: 'LINE',
+            chartType: 'COLUMN',
             legendPosition: 'BOTTOM_LEGEND',
             axis: [
               {
                 position: 'BOTTOM_AXIS',
                 title: '시간',
+              },
+              {
+                position: 'LEFT_AXIS',
+                title: 'title1',
               },
             ],
             domains: [
@@ -757,35 +765,38 @@ const lineChart = (orderPosition) => {
                       {
                         sheetId,
                         startRowIndex: basicIndex,
-                        endRowIndex: basicIndex + insMeta[new String(orderPosition)].category.length,
+                        endRowIndex: basicIndex + insMeta[new String(insNo)].category.length,
                         startColumnIndex: 2,
-                        endColumnIndex: 3
+                        endColumnIndex: 3,
                       },
                     ],
                   },
                 },
               },
             ],
-            series: [
-              {
-                series: {
-                  sourceRange: {
-                    sources: [
-                      {
-                        sheetId,
-                        startRowIndex: basicIndex,
-                        endRowIndex: 
-                      }
-                    ]
-                  }
-                }
-              }
-            ],
+            series: createSeries(positionOrder),
+            headerCount: 1,
           },
         },
+        position: {
+          overlayPosition: {
+            anchorCell: {
+              sheetId,
+              rowIndex: basicGraphIndex,
+              columnIndex: 3,
+            },
+            offsetXPixels: 0,
+            offsetYPixels: 0,
+            widthPixels: 1000,
+            heightPixels: 300,
+          },
+        }, // position
       },
-    },
+    }, // addChart
   };
+
+  data.push(chartReq);
+  return data;
 }
 
 export const reqParams = {
@@ -799,6 +810,7 @@ export const reqParams = {
   weekTotalData: weekTotalData,
   weekInsData: weekInsData,
   dataAlignRight: setDataAlignRight,
+  lineChart: lineChart,
   centerAlign: centerAlign(),
   title: setTitle(),
   term: setTerm(),
