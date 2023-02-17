@@ -17,7 +17,6 @@ const SCOPES = [
 const app = asyncify(express());
 const port = 3000;
 
-
 const credentials = 
     JSON.parse(fs.readFileSync(path.join(__dirname + '/credentials.json'))).installed;
 const oauth2Client = new google.auth.OAuth2({

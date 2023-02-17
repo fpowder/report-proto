@@ -6,6 +6,7 @@ const { utcToZonedTime, format } = dateFnsTz;
 const timeZone = 'Asia/Seoul';
 const pattern = 'yyyy-MM-dd HH:mm:ss';
 const datePattern = 'yyyy. MM. dd.';
+const datePattern2 = 'yyyy-MM-dd';
 
 /**
  * 매주 월요일이 되자마자 1초를 뺀 후 
@@ -87,6 +88,37 @@ export const getWeekStartEndDate = (date) => {
         eow: eowStr
     }
 }
+
+export const getWeekStartEndDate2 = (date) => {
+  const zonedDate = utcToZonedTime(date, timeZone);
+
+  // const curDate = format(zonedDate, datePattern, { timeZone: timeZone });
+  // console.log('current Date : ' + curDate);
+
+  // const unixTime = getUnixTime(zonedDate);
+  const subMilliOneSec = getUnixTime(subMilliseconds(zonedDate, 1000));
+
+  // console.log('unixTime now : ' + unixTime);
+  // console.log('unixTime submilliseconds 1000 : ' + subMilliOneSec);
+
+  // console.log(format(fromUnixTime(unixTime), datePattern, { timeZone: timeZone }));
+  // console.log(format(fromUnixTime(subMilliOneSec), datePattern, { timeZone: timeZone }));
+
+  const oneSecFormerDate = fromUnixTime(subMilliOneSec);
+  const sow = startOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
+  const eow = endOfWeek(oneSecFormerDate, { weekStartsOn: 1 });
+
+  const sowStr = format(sow, datePattern2, { timeZone: timeZone });
+  const eowStr = format(eow, datePattern2, { timeZone: timeZone });
+
+  // console.log('Start of Week : ' + sowStr);
+  // console.log('End of Week : ' + eowStr);
+
+  return {
+    sow: sowStr,
+    eow: eowStr,
+  };
+};
 
 /** query sample
  * 

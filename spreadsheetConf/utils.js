@@ -1,8 +1,8 @@
-import { spreadsheetId, sheetId, rowOffset, startRowIndex, gap } from './properties.js';
+import { sheet, rowOffset, startRowIndex, gap } from './properties.js';
 
 export const createBatchReq = ( data ) => {
     return {
-        spreadsheetId,
+        spreadsheetId: sheet.getSpreadsheetId(),
         resource: {
             requests: data,
         },
@@ -11,7 +11,7 @@ export const createBatchReq = ( data ) => {
 
 export const createValuesReq = ( data ) => {
     return {
-        spreadsheetId,
+        spreadsheetId: sheet.getSpreadsheetId(),
         resource: {
             data: data,
             valueInputOption: 'RAW'
@@ -27,21 +27,21 @@ export const createSeries = (positionOrder) => {
 
     for(let i = 0; i < 3; i++){
         sources.push({
-            sheetId,
+            sheetId: sheet.sheetId,
             startRowIndex: basicIndex + i + 1,
             endRowIndex: basicIndex + i + 1 + 1,
             startColumnIndex: 3,
             endColumnIndex: 12,
         });
         sources.push({
-            sheetId,
+            sheetId: sheet.sheetId,
             startRowIndex: basicIndex + gap + i + 1,
             endRowIndex: basicIndex + gap + i + 1 + 1,
             startColumnIndex: 4,
             endColumnIndex: 12,
         });
         sources.push({
-            sheetId,
+            sheetId: sheet.sheetId,
             startRowIndex: basicIndex + gap * 2 + i + 1,
             endRowIndex: basicIndex + gap * 2 + i + 1 + 1,
             startColumnIndex: 4,

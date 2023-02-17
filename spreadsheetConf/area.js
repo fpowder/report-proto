@@ -1,4 +1,5 @@
-import { sheetId } from './properties.js';
+import { sheet } from './properties.js';
+const sheetId = sheet.sheetId;
 export const insMeta = {
   0: {
     title: '주간 종합',

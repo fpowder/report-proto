@@ -10,15 +10,15 @@ import {
   startGraphRowIndex,
   endGraphRowIndex,
   graphRowOffset,
-  sheetId,
-  spreadsheetId,
-  sheetTitle,
   gap,
+  sheet
 } from './properties.js';
 import { getWeekStartEndDate } from '../common/utils.js';
 import { createInsWeek, createTotalWeek } from '../spreadSheetData/data.js';
 import { createSeries } from './utils.js';
 
+const sheetId = sheet.sheetId;
+const sheetTitle = sheet.sheetTitle;
 /**
  * 각 개소들의 카테고리 spreadsheet 요청 파라메터
  * 1. 프레임 (셀 병합 및 범위) 처리 요청
