@@ -745,9 +745,38 @@ const lineChart = (positionOrder) => {
   const basicGraphIndex = startGraphRowIndex + positionOrder * graphRowOffset;
   const insNo = positionOrder;
 
+  const domain = {
+    sourceRange: {
+      sources: [
+        {
+          sheetId,
+          startRowIndex: basicIndex,
+          endRowIndex: basicIndex + 1,
+          startColumnIndex: 3,
+          endColumnIndex: 12,
+        },
+        {
+          sheetId,
+          startRowIndex: basicIndex + gap,
+          endRowIndex: basicIndex + gap + 1,
+          startColumnIndex: 4,
+          endColumnIndex: 12,
+        },
+        {
+          sheetId,
+          startRowIndex: basicIndex + gap * 2,
+          endRowIndex: basicIndex + gap * 2 + 1,
+          startColumnIndex: 4,
+          endColumnIndex: 12,
+        },
+      ],
+    },
+  };
+
   const chartReq = {
     addChart: {
       chart: {
+        chartId: insNo,
         spec: {
           title: '',
           basicChart: {
@@ -765,33 +794,7 @@ const lineChart = (positionOrder) => {
             ],
             domains: [
               {
-                domain: {
-                  sourceRange: {
-                    sources: [
-                      {
-                        sheetId,
-                        startRowIndex: basicIndex,
-                        endRowIndex: basicIndex + 1,
-                        startColumnIndex: 3,
-                        endColumnIndex: 12,
-                      },
-                      {
-                        sheetId,
-                        startRowIndex: basicIndex + gap,
-                        endRowIndex: basicIndex + gap + 1,
-                        startColumnIndex: 4,
-                        endColumnIndex: 12,
-                      },
-                      {
-                        sheetId,
-                        startRowIndex: basicIndex + gap * 2,
-                        endRowIndex: basicIndex + gap * 2 + 1,
-                        startColumnIndex: 4,
-                        endColumnIndex: 12,
-                      },
-                    ],
-                  },
-                },
+                domain
               },
             ],
             series: createSeries(positionOrder),
@@ -807,7 +810,7 @@ const lineChart = (positionOrder) => {
             },
             offsetXPixels: 0,
             offsetYPixels: 0,
-            widthPixels: 1000,
+            widthPixels: 900,
             heightPixels: 300,
           },
         }, // position

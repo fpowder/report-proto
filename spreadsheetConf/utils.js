@@ -55,6 +55,13 @@ export const createSeries = (positionOrder) => {
                 },
             },
             targetAxis: 'LEFT_AXIS',
+            dataLabel: {
+                type: 'DATA',
+                placement: 'ABOVE',
+                textFormat: {
+                    fontSize: 8
+                }
+            }
         });
 
         sources = [];
