@@ -14,7 +14,7 @@ dataRouter.get('/td/sync', async(req, res) => {
         });
         return;
     }
-    
+
     if(!(isMatch(req.query.start) || isMatch(req.query.end))) {
         res.status(400).send({
             message: `start or end param date pattern is not ${datePattern}`
@@ -101,7 +101,7 @@ dataRouter.get('/illegal/sync', async(req, res) => {
       return;
     }
 
-    const insertTdSql = `
+    const insertIllegalSql = `
         INSERT INTO illegal_parking_table 
             (i_no, i_ins_no, cctv_no, illegal_in_time, illegal_out_time) 
         VALUES ?;
@@ -131,7 +131,7 @@ dataRouter.get('/illegal/sync', async(req, res) => {
         mtstParam.push(value);
       }
 
-      const executeResult = await conn.query(insertTdSql, [mtstParam]);
+      const executeResult = await conn.query(insertIllegalSql, [mtstParam]);
 
       res.status(200).send({
         message: `illegal data sync complete`,

@@ -13,8 +13,13 @@ const app = asyncify(express());
 
 // create xlsx folder create if not exist
 const __dirname = path.resolve();
-if(!fs.existsSync(path.resolve(__dirname, './xlsx'))){
+if(!fs.existsSync(path.resolve(__dirname, './xlsx'))) {
   fs.mkdirSync(path.resolve(__dirname, './xlsx'));
+}
+
+// create log directory if not exist
+if(!fs.existsSync(path.resolve(__dirname, './logs'))) {
+  fs.mkdirSync(path.resolve(__dirname, './logger.js'));
 }
 
 app.use('/sheet', sheetRouter);

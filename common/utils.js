@@ -126,7 +126,7 @@ export const getWeekStartEndDate2 = (date) => {
  * @param {*} date 
  * @returns 
  */
-export const getDateStartEnd = (date) => {
+export const getDayStartEnd = (date) => {
     const zonedDate = utcToZonedTime(date, timeZone);
 
     const subMilliOneSec = getUnixTime(subMilliseconds(zonedDate, 1000));
