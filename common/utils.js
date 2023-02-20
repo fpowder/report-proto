@@ -92,8 +92,8 @@ export const getWeekStartEndDate = (date, subSeconds) => {
     return {
         sow: sowStr,
         eow: eowStr,
-        year: getYear(subSecFormerDate),
-        month: getMonth(subSecFormerDate)
+        year: getYear(sow),
+        month: getMonth(sow)
     }
 }
 
@@ -125,8 +125,8 @@ export const getWeekStartEndDate2 = (date, subSeconds) => {
     return {
         sow: sowStr,
         eow: eowStr,
-        year: getYear(subSecFormerDate),
-        month: getMonth(subSecFormerDate)
+        year: getYear(sow),
+        month: getMonth(sow)
     };
 };
 
