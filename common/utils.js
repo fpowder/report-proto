@@ -1,4 +1,4 @@
-import { startOfWeek, endOfWeek, subMilliseconds, fromUnixTime, getUnixTime } from 'date-fns';
+import { startOfWeek, endOfWeek, subMilliseconds, fromUnixTime, getUnixTime, startOfDay, endOfDay } from 'date-fns';
 import dateFnsTz from 'date-fns-tz';
 // import { scheduleJob } from 'node-schedule';
 
@@ -119,6 +119,30 @@ export const getWeekStartEndDate2 = (date) => {
     eow: eowStr,
   };
 };
+
+/**
+ * 00시가 된 후 바로 전날 시작일 및 종료일을 구한다.
+ * - 일일 데이터 동기화 스케줄러에 활용
+ * @param {*} date 
+ * @returns 
+ */
+export const getDateStartEnd = (date) => {
+    const zonedDate = utcToZonedTime(date, timeZone);
+
+    const subMilliOneSec = getUnixTime(subMilliseconds(zonedDate, 1000));
+    
+    const oneSecFormerDate = fromUnixTime(subMilliOneSec);
+    const sod = startOfDay(oneSecFormerDate);
+    const eod = endOfDay(oneSecFormerDate);
+
+    const sodStr = format(sod, datePattern, { timeZone: timeZone });
+    const eodStr = format(eod, datePattern, { timeZone: timeZone });
+
+    return {
+        sod: sodStr,
+        eod: eodStr
+    }
+}
 
 /** query sample
  * 

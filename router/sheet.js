@@ -20,7 +20,7 @@ sheetRouter.get('/frame-data', async(req, res) => {
 
     // new spread sheet create and set spreadsheetId, sheetTitle, sheetId
     const weekStartEndDate = getWeekStartEndDate2(new Date());
-    const fileName = `금천구 교통안전 알림이 보고서(${weekStartEndDate.sow}~${weekStartEndDate.eow})`;
+    const fileName = `금천구 교통안전 알림이 주간(${weekStartEndDate.sow}~${weekStartEndDate.eow})`;
     // const fileName = 'test';
     const newSheet = await apiInstance.sheets.spreadsheets.create({
       fields: 'spreadsheetId',
@@ -145,7 +145,7 @@ sheetRouter.get('/frame-data', async(req, res) => {
         console.log(err);
       });
     
-    
+         
     // res.status(200).send({
     //   message: 'frame set complete'
     // });

@@ -1,6 +1,9 @@
 import express from 'express';
 import { apiInstance } from './GoogleAPIs.js';
+
 import sheetRouter from './router/sheet.js';
+import dataRouter from './router/data.js';
+
 import asyncify from 'express-asyncify';
 import fs from 'fs';
 import path from 'path';
@@ -15,7 +18,7 @@ if(!fs.existsSync(path.resolve(__dirname, './xlsx'))){
 }
 
 app.use('/sheet', sheetRouter);
-
+app.use('/data', dataRouter);
 app.get('/token', (req, res) => {
   const authUrl = apiInstance.setAuthUrl().requestNewToken();
   res.status(200).send({
@@ -44,3 +47,11 @@ let server = app.listen(3000, function () {
 
   console.log('server is running on [%s:%s]', host, port);
 });
+
+/**
+ * 주기적으로 데이터를 수집 
+ * 금천구 api 사용
+ */
+(() => {
+
+})();
