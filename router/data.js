@@ -67,11 +67,14 @@ dataRouter.get('/td/sync', async(req, res) => {
 
         res.status(200).send({
             message: `traffic data sync complete`,
-            executeResult: executeResult
+            executeResult: executeResult[0]
         });
+        logger.info('traffic data sync complete');
+        logger.info(executeResult[0]);
         
     } catch(err) {
-        console.log(err);
+        logger.error('traffic data sync error');
+        logger.error(err);
         res.status(400).send({
             message: `can't sync traffic data.`,
             err: err
@@ -110,15 +113,15 @@ dataRouter.get('/illegal/sync', async(req, res) => {
     // create data base connection
     const conn = await promisePool.getConnection();
     try {
-      const start = req.query.start;
-      const end = req.query.end;
+        const start = req.query.start;
+        const end = req.query.end;
 
-      const dataForInsert = await axios.get(`${url}${illegalPath}`, {
+        const dataForInsert = await axios.get(`${url}${illegalPath}`, {
         params: { start, end },
-      });
+        });
 
-      let mtstParam = [];
-      for (let eachRow of dataForInsert.data) {
+        let mtstParam = [];
+        for (let eachRow of dataForInsert.data) {
         if(eachRow.i_ins_no === 4) continue;
         let value = [];
         value.push(
@@ -129,22 +132,25 @@ dataRouter.get('/illegal/sync', async(req, res) => {
             eachRow.illegal_out_time
         );
         mtstParam.push(value);
-      }
+        }
 
-      const executeResult = await conn.query(insertIllegalSql, [mtstParam]);
+        const executeResult = await conn.query(insertIllegalSql, [mtstParam]);
 
-      res.status(200).send({
-        message: `illegal data sync complete`,
-        executeResult: executeResult,
-      });
+        res.status(200).send({
+            message: `illegal data sync complete`,
+            executeResult: executeResult[0],
+        });
+        logger.info('illegal data sync complete');
+        logger.info(executeResult[0]);
     } catch (err) {
-      console.log(err);
-      res.status(400).send({
-        message: `can't sync illegal data.`,
-        err: err,
-      });
+        logger.error('illegal data sync error');
+        logger.error(err);
+        res.status(400).send({
+            message: `can't sync illegal data.`,
+            err: err,
+        });
     } finally {
-      conn.release();
+        conn.release();
     }
 });
 

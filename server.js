@@ -8,6 +8,8 @@ import asyncify from 'express-asyncify';
 import fs from 'fs';
 import path from 'path';
 
+import { dailySyncJob } from './scheduler/daily.js';
+
 const app = asyncify(express());
 // const app = express();
 
@@ -15,11 +17,6 @@ const app = asyncify(express());
 const __dirname = path.resolve();
 if(!fs.existsSync(path.resolve(__dirname, './xlsx'))) {
   fs.mkdirSync(path.resolve(__dirname, './xlsx'));
-}
-
-// create log directory if not exist
-if(!fs.existsSync(path.resolve(__dirname, './logs'))) {
-  fs.mkdirSync(path.resolve(__dirname, './logger.js'));
 }
 
 app.use('/sheet', sheetRouter);
@@ -58,5 +55,5 @@ let server = app.listen(3000, function () {
  * 금천구 api 사용
  */
 (() => {
-
+  dailySyncJob();
 })();
