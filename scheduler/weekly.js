@@ -14,8 +14,8 @@ const __dirname = path.resolve();
 
 const subSeconds = 300;
 export const weeklyReportCreateJob = () => {
-    // scheduleJob(`0/${subSeconds / 60} 0 * * 1`, async() => {
-    scheduleJob(`0/18 * * * *`, async() => {
+    // scheduleJob(`${subSeconds / 60} 0 * * 1`, async() => {
+    scheduleJob(`02 * * * *`, async() => {
 
         const date = new Date();
         // for set fileName and directory name
@@ -165,14 +165,13 @@ export const weeklyReportCreateJob = () => {
 
         const stream = file.data;
         stream
-          .pipe(fs.createWriteStream(`${__dirname}/xlsx/${year}/${month}/${fileName}.xlsx`))
-          .on('finish', () => {
-            console.log('xlsx file write stream complete');
-            // res.status(200).download(`${__dirname}/xlsx/${fileName}.xlsx`);
-          })
-          .on('error', (err) => {
-            console.log(err);
-          });
+            .pipe(fs.createWriteStream(`${__dirname}/xlsx/${year}/${month}/${fileName}.xlsx`))
+            .on('finish', () => {
+                logger.info('xlsx file write stream complete');
+            })
+            .on('error', (err) => {
+                logger.error(err);
+            });
 
     });
 }

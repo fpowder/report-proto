@@ -9,6 +9,12 @@ const datePattern = 'yyyy. MM. dd.';
 const datePattern2 = 'yyyy-MM-dd';
 
 /**
+ * 전날 및 전주 계산을 위해 추가로 빼는 시간
+ * 5초
+ */
+const subMoreMilli = 5000;
+
+/**
  * 매주 월요일이 되자마자 301초를 뺀 후 
  * 바로 이전주의 시작일과 마지막일 계산
  * 매주 월요일 00시 5분에 301초를 뺀 unix timestamp를 계산하여 전주 시작일과 끝일을 구하는데 사용
@@ -25,7 +31,7 @@ export const getWeekStartEnd = (date, subSeconds) => {
     // console.log('current Date : ' + curDate);
 
     // const unixTime = getUnixTime(zonedDate);
-    const subMilliSubSec = getUnixTime(subMilliseconds(zonedDate, subSeconds * 1000+ 1000));
+    const subMilliSubSec = getUnixTime(subMilliseconds(zonedDate, subSeconds * 1000 + subMoreMilli));
 
     // console.log('unixTime now : ' + unixTime);
     // console.log('unixTime submilliseconds 1000 : ' + subMilliSubSec);
@@ -65,7 +71,7 @@ export const getWeekStartEndDate = (date, subSeconds) => {
     // console.log('current Date : ' + curDate);
 
     // const unixTime = getUnixTime(zonedDate);
-    const subMilliSubSec = getUnixTime(subMilliseconds(zonedDate, subSeconds * 1000 + 1000));
+    const subMilliSubSec = getUnixTime(subMilliseconds(zonedDate, subSeconds * 1000 + subMoreMilli));
 
     // console.log('unixTime now : ' + unixTime);
     // console.log('unixTime submilliseconds 1000 : ' + subMilliSubSec);
@@ -98,7 +104,7 @@ export const getWeekStartEndDate2 = (date, subSeconds) => {
     // console.log('current Date : ' + curDate);
 
     // const unixTime = getUnixTime(zonedDate);
-    const subMilliSubSec = getUnixTime(subMilliseconds(zonedDate, subSeconds * 1000 + 1000));
+    const subMilliSubSec = getUnixTime(subMilliseconds(zonedDate, subSeconds * 1000 + subMoreMilli));
 
     // console.log('unixTime now : ' + unixTime);
     // console.log('unixTime submilliseconds 1000 : ' + subMilliSubSec);
@@ -133,7 +139,7 @@ export const getWeekStartEndDate2 = (date, subSeconds) => {
 export const getDayStartEnd = (date, subSeconds) => {
     const zonedDate = utcToZonedTime(date, timeZone);
 
-    const subMilliSubSec = getUnixTime(subMilliseconds(zonedDate, subSeconds * 1000 + 1000));
+    const subMilliSubSec = getUnixTime(subMilliseconds(zonedDate, subSeconds * 1000 + subMoreMilli));
     
     const subSecFormerDate = fromUnixTime(subMilliSubSec);
     const sod = startOfDay(subSecFormerDate);

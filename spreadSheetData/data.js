@@ -11,13 +11,13 @@ export const createTotalWeek = async(date) => {
     // test date
     const sow = '2023-01-13 00:00:00';
     const eow = '2023-01-19 23:59:59';
-
+    
     let tdSql = `
         SELECT
             T.hour as hour,
             CAST(IFNULL(td.ped_count, 0) as signed) as ped_count,
             CAST(IFNULL(td.car_count, 0) as signed) as car_count,
-            CAST(td.p_density as float) as p_density
+            td.p_density as p_density
         FROM
             (
                 SELECT @N := @N + 1 AS hour
@@ -27,13 +27,12 @@ export const createTotalWeek = async(date) => {
             (
                 SELECT
                     date_format(uptime, '%H') as hour,
+                    sum(ped_count) as ped_count,
                     sum(car_count) as car_count,
-                    ROUND(AVG(p_density), 1) as p_density,
-                    sum(ped_count) as ped_count
+                    CAST(ROUND(AVG(p_density), 1) as DOUBLE) as p_density
                 FROM
                     traffic_data
-                WHERE uptime BETWEEN '${sow}' AND '${eow}'
-                GROUP BY hour
+                WHERE uptime BETWEEN '${sow}' AND '${eow}' GROUP BY hour
             ) AS td
         ON T.hour = td.hour;
     `;
@@ -55,8 +54,7 @@ export const createTotalWeek = async(date) => {
                     illegal_parking_table
                 WHERE 
                     illegal_in_time 
-                BETWEEN '${sow}' AND '${eow}'
-                GROUP BY hour
+                BETWEEN '${sow}' AND '${eow}' GROUP BY hour
             ) AS illegal
         ON T.hour = illegal.hour;
     `;
@@ -142,7 +140,7 @@ export const createInsWeek = async (insNo, date) => {
             T.hour as hour,
             CAST(IFNULL(td.ped_count, 0) as signed) as ped_count,
             CAST(IFNULL(td.car_count, 0) as signed) as car_count,
-            CAST(td.p_density as float) as p_density
+            td.p_density as p_density
         FROM
             (
                 SELECT @N := @N + 1 AS hour
@@ -152,9 +150,9 @@ export const createInsWeek = async (insNo, date) => {
             (
                 SELECT
                     date_format(uptime, '%H') as hour,
+                    sum(ped_count) as ped_count,
                     sum(car_count) as car_count,
-                    ROUND(AVG(p_density), 1) as p_density,
-                    sum(ped_count) as ped_count
+                    CAST(ROUND(AVG(p_density), 1) as DOUBLE) as p_density
                 FROM
                     traffic_data
                 WHERE 
