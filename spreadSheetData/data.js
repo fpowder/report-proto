@@ -2,12 +2,13 @@ import promisePool from '../config/mariaDBConn.js';
 import { insMeta } from '../spreadsheetConf/area.js';
 import { getWeekStartEnd } from '../common/utils.js';
 
-export const createTotalWeek = async() => {
+export const createTotalWeek = async(date) => {
 
-    const weekStartEnd = getWeekStartEnd(new Date());
+    // const weekStartEnd = getWeekStartEnd(date);
     // const sow = weekStartEnd.sow;
     // const eow = weekStartEnd.eow;
 
+    // test date
     const sow = '2023-01-01 00:00:00';
     const eow = '2023-01-07 23:59:59';
 
@@ -114,11 +115,12 @@ export const createTotalWeek = async() => {
 
 }
 
-export const createInsWeek = async(insNo) => {
-  const weekStartEnd = getWeekStartEnd(new Date());
+export const createInsWeek = async (insNo, date) => {
+  // const weekStartEnd = getWeekStartEnd(date);
   // const sow = weekStartEnd.sow;
   // const eow = weekStartEnd.eow;
 
+  // test date
   const sow = '2023-01-01 00:00:00';
   const eow = '2023-01-07 23:59:59';
 
@@ -263,7 +265,7 @@ export const createInsWeek = async(insNo) => {
   } finally {
     conn.release();
   }
-}
+};
 
 // (async() => {
 //     await createInsWeek(5);

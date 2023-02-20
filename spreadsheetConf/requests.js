@@ -377,7 +377,7 @@ const setTitle = () => {
 /**
  * 데이터 기간 제목영역 스타일 및 기간삽입 요청
  */
-const setTerm = () => {
+const setTerm = (weekStartEndDate) => {
   const termRange = {
     sheetId,
     startRowIndex: 2,
@@ -434,9 +434,6 @@ const setTerm = () => {
     majorDimension: 'ROWS',
     values: [['기간:']],
   });
-
-  // get current week start, end date
-  const weekStartEndDate = getWeekStartEndDate(new Date());
 
   data.push({
     range: `${sheetTitle}!K3:L3`,
@@ -669,8 +666,8 @@ const adjustCell = (dimension, pixelSize, startIndex, endIndex) => {
   }]; // return
 }
 
-const weekTotalData = async () => {
-  const tdDataSet = await createTotalWeek();
+const weekTotalData = async (date) => {
+  const tdDataSet = await createTotalWeek(date);
 
   const hourDataSet = tdDataSet.hour;
   const totalDataSet = tdDataSet.total;
@@ -704,8 +701,8 @@ const weekTotalData = async () => {
   return data;
 }
 
-const weekInsData = async(insNo, positionOrder) => {
-  const tdDataSet = await createInsWeek(insNo);
+const weekInsData = async(insNo, positionOrder, date) => {
+  const tdDataSet = await createInsWeek(insNo, date);
 
   const hourDataSet = tdDataSet.hour;
   const totalDataSet = tdDataSet.total;
@@ -835,8 +832,8 @@ export const reqParams = {
   dataAlignRight: setDataAlignRight,
   lineChart: lineChart,
   centerAlign: centerAlign(),
+  setTerm: setTerm,
   title: setTitle(),
-  term: setTerm(),
   menu: setMenu(),
   systemCollection: setSystemCollection(),
 };

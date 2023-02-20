@@ -6,6 +6,7 @@ import promisePool from '../config/mariaDBConn.js';
 
 import { logger } from '../logger.js';
 
+const subSeconds = 1;
 export const dailySyncJob = () => {
     scheduleJob('0 0 * * *', async () => {
         let dailyTd;
@@ -13,17 +14,16 @@ export const dailySyncJob = () => {
 
         // get data from server
         try {
-        const prevDayStartEnd = getDayStartEnd(new Date());
-        const start = prevDayStartEnd.sod;
-        const end = prevDayStartEnd.eod;
+            const prevDayStartEnd = getDayStartEnd(new Date(), subSeconds);
+            const start = prevDayStartEnd.sod;
+            const end = prevDayStartEnd.eod;
 
-        dailyTd = await axios.get(`${url}${tdPath}`, { params: { start, end } })
-            .data;
-        dailyIllegal = await axios.get(`${url}${illegalPath}`, {
-            params: { start, end },
-        }).data;
+            dailyTd = await axios.get(`${url}${tdPath}`, { params: { start, end } }).data;
+            dailyIllegal = await axios.get(`${url}${illegalPath}`, {
+                params: { start, end },
+            }).data;
         } catch (err) {
-        console.log('error occured on daily data sync');
+            console.log('error occured on daily data sync');
         }
 
         const insertTdSql = `
@@ -40,64 +40,64 @@ export const dailySyncJob = () => {
 
         const conn = await promisePool.getConnection();
         try {
-        // daily traffic data sync
-        let mtstParam = [];
-        for (let eachRow of dailyTd) {
-            let value = [];
-            value.push(eachRow.no);
-            value.push(
-            (() => {
-                if (typeof eachRow.ins_no === 'string') {
-                return parseInt(eachRow.ins_no);
-                }
-                return eachRow.ins_no;
-            })()
-            );
-            value.push(
-            (() => {
-                if (typeof eachRow.cctv_no === 'string') {
-                return parseInt(eachRow.cctv_no);
-                }
-                return eachRow.cctv_no;
-            })()
-            );
-            value.push(
-            eachRow.c_density_in,
-            eachRow.c_density_out,
-            eachRow.ped_count,
-            eachRow.car_out_count,
-            eachRow.ped_out_count,
-            eachRow.car_count,
-            eachRow.p_density,
-            eachRow.uptime
-            );
+            // daily traffic data sync
+            let mtstParam = [];
+            for (let eachRow of dailyTd) {
+                let value = [];
+                value.push(eachRow.no);
+                value.push(
+                    (() => {
+                        if (typeof eachRow.ins_no === 'string') {
+                        return parseInt(eachRow.ins_no);
+                        }
+                        return eachRow.ins_no;
+                    })()
+                );
+                value.push(
+                    (() => {
+                        if (typeof eachRow.cctv_no === 'string') {
+                        return parseInt(eachRow.cctv_no);
+                        }
+                        return eachRow.cctv_no;
+                    })()
+                );
+                value.push(
+                    eachRow.c_density_in,
+                    eachRow.c_density_out,
+                    eachRow.ped_count,
+                    eachRow.car_out_count,
+                    eachRow.ped_out_count,
+                    eachRow.car_count,
+                    eachRow.p_density,
+                    eachRow.uptime
+                );
 
-            mtstParam.push(value);
-        }
+                mtstParam.push(value);
+            }
 
-        const tdInsertResult = await conn.query(insertTdSql, [mtstParam]);
+            const tdInsertResult = await conn.query(insertTdSql, [mtstParam]);
 
-        // daily illegal data sync
-        mtstParam = [];
-        for (let eachRow of dailyIllegal) {
-            if (eachRow.i_ins_no === 4) continue;
-            let value = [];
-            value.push(
-            eachRow.i_no,
-            eachRow.i_ins_no,
-            eachRow.cctv_no,
-            eachRow.illegal_in_time,
-            eachRow.illegal_out_time
-            );
-            mtstParam.push(value);
-        }
+            // daily illegal data sync
+            mtstParam = [];
+            for (let eachRow of dailyIllegal) {
+                if (eachRow.i_ins_no === 4) continue;
+                let value = [];
+                value.push(
+                    eachRow.i_no,
+                    eachRow.i_ins_no,
+                    eachRow.cctv_no,
+                    eachRow.illegal_in_time,
+                    eachRow.illegal_out_time
+                );
+                mtstParam.push(value);
+            }
 
-        const illegalInsertResult = await conn.query(insertIllegalSql, [
-            mtstParam,
-        ]);
+            const illegalInsertResult = await conn.query(insertIllegalSql, [
+                mtstParam,
+            ]);
 
-        logger.info(tdInsertResult);
-        logger.info(illegalInsertResult);
+            logger.info(tdInsertResult);
+            logger.info(illegalInsertResult);
 
         } catch (err) {
             logger.error('error occured on daily traffic, illegal data');

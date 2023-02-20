@@ -1,7 +1,10 @@
 import express from 'express';
 import promisePool from '../config/mariaDBConn.js'
+
 import { isMatch } from 'date-fns';
 import { url, tdPath, illegalPath } from '../config/source.js';
+import { logger } from '../logger.js';
+
 import axios from 'axios';
 
 const datePattern = 'yyyy-MM-dd HH:mm:ss';
@@ -15,9 +18,14 @@ dataRouter.get('/td/sync', async(req, res) => {
         return;
     }
 
-    if(!(isMatch(req.query.start) || isMatch(req.query.end))) {
+    if (
+        !(
+            isMatch(req.query.start, datePattern) ||
+            isMatch(req.query.end, datePattern)
+        )
+    ) {
         res.status(400).send({
-            message: `start or end param date pattern is not ${datePattern}`
+            message: `start or end param date pattern is not ${datePattern}`,
         });
         return;
     }
@@ -93,15 +101,15 @@ dataRouter.get('/illegal/sync', async(req, res) => {
       return;
     }
     if (
-      !(
-        isMatch(req.query.start, datePattern) ||
-        isMatch(req.query.end, datePattern)
-      )
+        !(
+            isMatch(req.query.start, datePattern) ||
+            isMatch(req.query.end, datePattern)
+        )
     ) {
-      res.status(400).send({
-        message: `start or end param date pattern is not ${datePattern}`,
-      });
-      return;
+        res.status(400).send({
+            message: `start or end param date pattern is not ${datePattern}`,
+        });
+        return;
     }
 
     const insertIllegalSql = `
@@ -117,21 +125,21 @@ dataRouter.get('/illegal/sync', async(req, res) => {
         const end = req.query.end;
 
         const dataForInsert = await axios.get(`${url}${illegalPath}`, {
-        params: { start, end },
+            params: { start, end },
         });
 
         let mtstParam = [];
         for (let eachRow of dataForInsert.data) {
-        if(eachRow.i_ins_no === 4) continue;
-        let value = [];
-        value.push(
-            eachRow.i_no,
-            eachRow.i_ins_no,
-            eachRow.cctv_no,
-            eachRow.illegal_in_time,
-            eachRow.illegal_out_time
-        );
-        mtstParam.push(value);
+            if(eachRow.i_ins_no === 4) continue;
+            let value = [];
+            value.push(
+                eachRow.i_no,
+                eachRow.i_ins_no,
+                eachRow.cctv_no,
+                eachRow.illegal_in_time,
+                eachRow.illegal_out_time
+            );
+            mtstParam.push(value);
         }
 
         const executeResult = await conn.query(insertIllegalSql, [mtstParam]);

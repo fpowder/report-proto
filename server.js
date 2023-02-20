@@ -9,6 +9,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { dailySyncJob } from './scheduler/daily.js';
+import { weeklyReportCreateJob } from './scheduler/weekly.js';
 
 const app = asyncify(express());
 // const app = express();
@@ -56,4 +57,5 @@ let server = app.listen(3000, function () {
  */
 (() => {
   dailySyncJob();
+  weeklyReportCreateJob();
 })();

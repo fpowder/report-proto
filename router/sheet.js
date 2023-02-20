@@ -4,7 +4,7 @@ import { apiInstance } from '../GoogleAPIs.js';
 import { reqParams } from '../spreadsheetConf/requests.js';
 import { cnt, sheet } from '../spreadsheetConf/properties.js';
 import { createBatchReq, createValuesReq } from '../spreadsheetConf/utils.js';
-import { getWeekStartEndDate2 } from '../common/utils.js';
+import { getWeekStartEndDate2, getWeekStartEndDate } from '../common/utils.js';
 
 import path from 'path';
 import fs from 'fs';
@@ -12,15 +12,14 @@ import fs from 'fs';
 const __dirname = path.resolve();
 
 const sheetRouter = express.Router();
-
 sheetRouter.get('/frame-data', async(req, res) => {
   try {
-    
+    const date = new Date();
     const sheetTitle = sheet.sheetTitle;
 
     // new spread sheet create and set spreadsheetId, sheetTitle, sheetId
-    const weekStartEndDate = getWeekStartEndDate2(new Date());
-    const fileName = `금천구 교통안전 알림이 주간(${weekStartEndDate.sow}~${weekStartEndDate.eow})`;
+    const weekStartEndDate2 = getWeekStartEndDate2(date, 1);
+    const fileName = `금천구 교통안전 알림이 주간(${weekStartEndDate2.sow}~${weekStartEndDate2.eow})`;
     // const fileName = 'test';
     const newSheet = await apiInstance.sheets.spreadsheets.create({
       fields: 'spreadsheetId',
@@ -62,8 +61,9 @@ sheetRouter.get('/frame-data', async(req, res) => {
     valueData.push(...reqParams.menu.value);
 
     // set term
-    batchData.push(...reqParams.term.frame);
-    valueData.push(...reqParams.term.value);
+    const startEndDate = getWeekStartEndDate(date);
+    batchData.push(...reqParams.setTerm(startEndDate).frame);
+    valueData.push(...reqParams.setTerm(startEndDate).value);
 
     // set collection 1.시스템 점검(상태) 내용 
     batchData.push(...reqParams.systemCollection.frame);
@@ -107,11 +107,11 @@ sheetRouter.get('/frame-data', async(req, res) => {
 
     // data insert
     // 주간 종합 데이터
-    valueData.push(...(await reqParams.weekTotalData()));
+    valueData.push(...(await reqParams.weekTotalData(date)));
     // 개소별 데이터 1 ~ 13
     for (let insNo = 1; insNo <= cnt; insNo++){
       const positionOrder = insNo;
-      valueData.push(...(await reqParams.weekInsData(insNo, positionOrder)));
+      valueData.push(...(await reqParams.weekInsData(insNo, positionOrder, date)));
     }
 
     await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(batchData));
@@ -126,7 +126,6 @@ sheetRouter.get('/frame-data', async(req, res) => {
     }
     await apiInstance.sheets.spreadsheets.batchUpdate(createBatchReq(batchData));
    
-
     const file = await apiInstance.drives.files.export({
       fileId: sheet.spreadsheetId,
       mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -144,7 +143,6 @@ sheetRouter.get('/frame-data', async(req, res) => {
       .on('error', (err) => {
         console.log(err);
       });
-    
          
     // res.status(200).send({
     //   message: 'frame set complete'
