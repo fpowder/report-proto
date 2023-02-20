@@ -1,6 +1,7 @@
 import express from 'express';
 import promisePool from '../config/mariaDBConn.js'
 
+import { isUtcHandler } from '../common/utils.js';
 import { isMatch } from 'date-fns';
 import { url, tdPath, illegalPath } from '../config/source.js';
 import { logger } from '../logger.js';
@@ -65,7 +66,10 @@ dataRouter.get('/td/sync', async(req, res) => {
                 eachRow.c_density_in, eachRow.c_density_out, 
                 eachRow.ped_count, eachRow.car_out_count,
                 eachRow.ped_out_count, eachRow.car_count,
-                eachRow.p_density, eachRow.uptime
+                eachRow.p_density, 
+                (() => {
+                    return isUtcHandler(eachRow.uptime);
+                })()
             );
 
             mtstParam.push(value);
@@ -136,8 +140,12 @@ dataRouter.get('/illegal/sync', async(req, res) => {
                 eachRow.i_no,
                 eachRow.i_ins_no,
                 eachRow.cctv_no,
-                eachRow.illegal_in_time,
-                eachRow.illegal_out_time
+                (() => {
+                    return isUtcHandler(eachRow.illegal_in_time);
+                })(),
+                (() => {
+                    return isUtcHandler(eachRow.illegal_out_time);
+                })()
             );
             mtstParam.push(value);
         }

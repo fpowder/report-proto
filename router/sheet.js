@@ -15,7 +15,6 @@ const sheetRouter = express.Router();
 sheetRouter.get('/frame-data', async(req, res) => {
   try {
     const date = new Date();
-    const sheetTitle = sheet.sheetTitle;
 
     // new spread sheet create and set spreadsheetId, sheetTitle, sheetId
     const weekStartEndDate2 = getWeekStartEndDate2(date, 1);
@@ -41,7 +40,7 @@ sheetRouter.get('/frame-data', async(req, res) => {
             updateSheetProperties: {
               properties: {
                 sheetId: sheet.sheetId,
-                title: sheetTitle,
+                title: sheet.sheetTitle,
               },
               fields: 'title',
             },

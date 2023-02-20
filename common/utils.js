@@ -1,4 +1,4 @@
-import { startOfWeek, endOfWeek, subMilliseconds, fromUnixTime, getUnixTime, startOfDay, endOfDay, getYear, getMonth } from 'date-fns';
+import { startOfWeek, endOfWeek, subMilliseconds, fromUnixTime, getUnixTime, startOfDay, endOfDay, getYear, getMonth, parseISO } from 'date-fns';
 import dateFnsTz from 'date-fns-tz';
 // import { scheduleJob } from 'node-schedule';
 
@@ -147,6 +147,16 @@ export const getDayStartEnd = (date, subSeconds) => {
         eod: eodStr
     }
 }
+
+export const isUtcHandler = (dateStr) => {
+    const date = parseISO(dateStr);
+    // if timezone is utc change to timezone as asia/seoul
+    if(date.toISOString().endsWith('Z')) {
+        const seoulDate = utcToZonedTime(date, 'Asia/Seoul');
+        return format(seoulDate, pattern);
+    } else return dateStr;
+}
+
 
 /** query sample
  * 

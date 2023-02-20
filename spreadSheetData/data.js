@@ -9,8 +9,8 @@ export const createTotalWeek = async(date) => {
     // const eow = weekStartEnd.eow;
 
     // test date
-    const sow = '2023-01-01 00:00:00';
-    const eow = '2023-01-07 23:59:59';
+    const sow = '2023-01-13 00:00:00';
+    const eow = '2023-01-19 23:59:59';
 
     let tdSql = `
         SELECT
@@ -121,8 +121,8 @@ export const createInsWeek = async (insNo, date) => {
   // const eow = weekStartEnd.eow;
 
   // test date
-  const sow = '2023-01-01 00:00:00';
-  const eow = '2023-01-07 23:59:59';
+  const sow = '2023-01-13 00:00:00';
+  const eow = '2023-01-19 23:59:59';
 
   /**
    * 주의
@@ -158,7 +158,7 @@ export const createInsWeek = async (insNo, date) => {
                 FROM
                     traffic_data
                 WHERE 
-                    ins_no = '${insNoStr}'
+                    ins_no = ${insNoStr}
                 AND
                     uptime BETWEEN '${sow}' AND '${eow}'
                 GROUP BY hour

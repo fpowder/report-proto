@@ -1,5 +1,9 @@
 import { scheduleJob } from 'node-schedule';
 import { getWeekStartEndDate, getWeekStartEndDate2 } from '../common/utils.js';
+import { apiInstance } from '../GoogleAPIs.js';
+import { reqParams } from '../spreadsheetConf/requests.js';
+import { cnt, sheet } from '../spreadsheetConf/properties.js';
+import { createBatchReq, createValuesReq } from '../spreadsheetConf/utils.js';
 
 import fs from 'fs';
 import path from 'path';
@@ -7,11 +11,11 @@ import path from 'path';
 import { logger } from '../logger.js';
 
 const __dirname = path.resolve();
-console.log('__dirname', __dirname);
 
 const subSeconds = 300;
 export const weeklyReportCreateJob = () => {
-    scheduleJob(`0/${subSeconds / 60} 0 * * 1`, async() => {
+    // scheduleJob(`0/${subSeconds / 60} 0 * * 1`, async() => {
+    scheduleJob(`0/18 * * * *`, async() => {
 
         const date = new Date();
         // for set fileName and directory name
@@ -51,7 +55,7 @@ export const weeklyReportCreateJob = () => {
                 updateSheetProperties: {
                   properties: {
                     sheetId: sheet.sheetId,
-                    title: sheetTitle,
+                    title: sheet.sheetTitle,
                   },
                   fields: 'title',
                 },
@@ -71,7 +75,7 @@ export const weeklyReportCreateJob = () => {
         valueData.push(...reqParams.menu.value);
 
         // set term
-        const startEndDate = getWeekStartEndDate(date);
+        const startEndDate = getWeekStartEndDate(date, 300);
         batchData.push(...reqParams.setTerm(startEndDate).frame);
         valueData.push(...reqParams.setTerm(startEndDate).value);
 
@@ -164,7 +168,7 @@ export const weeklyReportCreateJob = () => {
           .pipe(fs.createWriteStream(`${__dirname}/xlsx/${year}/${month}/${fileName}.xlsx`))
           .on('finish', () => {
             console.log('xlsx file write stream complete');
-            res.status(200).download(`${__dirname}/xlsx/${fileName}.xlsx`);
+            // res.status(200).download(`${__dirname}/xlsx/${fileName}.xlsx`);
           })
           .on('error', (err) => {
             console.log(err);

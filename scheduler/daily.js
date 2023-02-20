@@ -69,7 +69,9 @@ export const dailySyncJob = () => {
                     eachRow.ped_out_count,
                     eachRow.car_count,
                     eachRow.p_density,
-                    eachRow.uptime
+                    (() => {
+                        return isUtcHandler(eachRow.uptime);
+                    })()
                 );
 
                 mtstParam.push(value);
@@ -86,8 +88,12 @@ export const dailySyncJob = () => {
                     eachRow.i_no,
                     eachRow.i_ins_no,
                     eachRow.cctv_no,
-                    eachRow.illegal_in_time,
-                    eachRow.illegal_out_time
+                    (() => {
+                        return isUtcHandler(eachRow.illegal_in_time);
+                    })(),
+                    (() => {
+                        return isUtcHandler(eachRow.illegal_out_time);
+                    })()
                 );
                 mtstParam.push(value);
             }
