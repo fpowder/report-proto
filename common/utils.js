@@ -48,6 +48,7 @@ export const getWeekStartEnd = () => {
  * @returns { sow: sowStr, eow: eowStr }
  */
 export const getWeekStartEndDate = () => {
+
     const zonedDate = utcToZonedTime(new Date(), timeZone);
     const sody = startOfYesterday(zonedDate);
 
@@ -112,9 +113,9 @@ export const isUtcHandler = (dateStr) => {
     } else return dateStr;
 }
 
-(() =>{
-    console.log(yesterdayStartEnd());
-})();
+// (() =>{
+//     console.log(yesterdayStartEnd());
+// })();
 
 /* (() => {
     // 일요일 테스트

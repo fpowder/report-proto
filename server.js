@@ -3,6 +3,7 @@ import { apiInstance } from './GoogleAPIs.js';
 
 import sheetRouter from './router/sheet.js';
 import dataRouter from './router/data.js';
+import reportRouter from './router/report.js';
 
 import asyncify from 'express-asyncify';
 import fs from 'fs';
@@ -24,6 +25,8 @@ if(!fs.existsSync(path.resolve(__dirname, './xlsx'))) {
 
 app.use('/sheet', sheetRouter);
 app.use('/data', dataRouter);
+app.use('/report', reportRouter);
+
 app.get('/token', (req, res) => {
   const authUrl = apiInstance.setAuthUrl().requestNewToken();
   res.status(200).send({

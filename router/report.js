@@ -8,7 +8,7 @@ import { isMatch } from 'date-fns';
 const __dirname = path.resolve();
 
 const yearPattern = 'yyyy';
-const monthPattern = 'MM';
+const monthPattern = 'M';
 
 const reportRouter = express.Router();
 reportRouter.get('/list', async(req, res) => {
@@ -22,7 +22,7 @@ reportRouter.get('/list', async(req, res) => {
     const year = req.query.year;
     const month = req.query.month;
 
-    if(!(isMatch(year, yearPattern)) || (isMatch(month, monthPattern))) {
+    if(!(isMatch(year, yearPattern) || isMatch(month, monthPattern))) {
         res.status(400).send({
             message: `year or month pattern is not valid.`
         });
@@ -62,7 +62,7 @@ reportRouter.get('/download', async(req, res) => {
     const year = req.query.year;
     const month = req.query.month;
 
-    if (!isMatch(year, yearPattern) || isMatch(month, monthPattern)) {
+    if (!(isMatch(year, yearPattern) || isMatch(month, monthPattern))) {
       res.status(400).send({
         message: `year or month pattern is not valid.`,
       });
@@ -82,8 +82,8 @@ reportRouter.get('/download', async(req, res) => {
 
 export default reportRouter;
 
-(() => {
-    const fileList = fs.readdirSync(path.resolve(__dirname, `./xlsx/2023/1`));
-    console.log(fileList);
-})();
+// (() => {
+//     const fileList = fs.readdirSync(path.resolve(__dirname, `./xlsx/2023/1`));
+//     console.log(fileList);
+// })();
 
