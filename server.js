@@ -11,6 +11,8 @@ import path from 'path';
 import { dailySyncJob } from './scheduler/daily.js';
 import { weeklyReportCreateJob } from './scheduler/weekly.js';
 
+const port = 8082;
+
 const app = asyncify(express());
 // const app = express();
 
@@ -44,7 +46,7 @@ app.get('/oauth2Callback', async (req, res) => {
   }
 });
 
-let server = app.listen(3000, function () {
+let server = app.listen(port, function () {
   let host = server.address().address;
   let port = server.address().port;
 
