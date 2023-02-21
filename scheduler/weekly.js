@@ -13,11 +13,12 @@ import { logger } from '../logger.js';
 const __dirname = path.resolve();
 
 export const weeklyReportCreateJob = () => {
-    // scheduleJob(`${subSeconds / 60} 0 * * 1`, async() => {
+    // 매주 월요일 00시 05분
+    // scheduleJob(`5 0 * * 1`, async() => {
     scheduleJob(`35 * * * *`, async() => {
 
         const date = new Date();
-        // for set fileName and directory name
+        // for set filename and directory name
         const weekStartEnd = getWeekStartEndDate();
         // const start = weekStartEnd.sow;
         // const end = weekStartEnd.eow;
@@ -25,20 +26,21 @@ export const weeklyReportCreateJob = () => {
         const month = weekStartEnd.month;
 
         const weekStartEnd2 = getWeekStartEndDate2();
-        const fileName = `${weekStartEnd2.sow}~${weekStartEnd2.eow}`;
+        const filename = `${weekStartEnd2.sow}~${weekStartEnd2.eow}`;
 
         if(!fs.existsSync(path.resolve(__dirname, `./xlsx/${year}`))) {
-            fs.mkdirSync(path.resolve(__dirname, `./xlsx/${year}`));
-            if(!fs.existsSync(path.resolve(__dirname, `./xlsx/${year}/${month}`))) {
-                fs.mkdirSync(path.resolve(__dirname, `./xlsx/${year}/${month}`));
-            }
+          fs.mkdirSync(path.resolve(__dirname, `./xlsx/${year}`));
+        }
+
+        if(!fs.existsSync(path.resolve(__dirname, `./xlsx/${year}/${month}`))) {
+          fs.mkdirSync(path.resolve(__dirname, `./xlsx/${year}/${month}`));
         }
 
         const newSheet = await apiInstance.sheets.spreadsheets.create({
           fields: 'spreadsheetId',
           resource: {
             properties: {
-              title: fileName,
+              title: filename,
             },
           },
         });
@@ -164,7 +166,7 @@ export const weeklyReportCreateJob = () => {
 
         const stream = file.data;
         stream
-            .pipe(fs.createWriteStream(`${__dirname}/xlsx/${year}/${month}/${fileName}.xlsx`))
+            .pipe(fs.createWriteStream(`${__dirname}/xlsx/${year}/${month}/${filename}.xlsx`))
             .on('finish', () => {
                 logger.info('xlsx file write stream complete');
             })

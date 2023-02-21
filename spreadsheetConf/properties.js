@@ -34,4 +34,5 @@ class Sheet {
     }
 }
 
+// for singleton
 export const sheet = new Sheet();

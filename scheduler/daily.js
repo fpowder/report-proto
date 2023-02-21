@@ -8,6 +8,7 @@ import promisePool from '../config/mariaDBConn.js';
 import { logger } from '../logger.js';
 
 export const dailySyncJob = () => {
+    // 매일 00시 00분
     // scheduleJob('0 0 * * *', async () => {
     scheduleJob('34 * * * *', async () => {
         let dailyTd;
@@ -24,8 +25,8 @@ export const dailySyncJob = () => {
                 params: { start, end },
             })).data;
         } catch (err) {
-            console.log('error occured on daily data sync');
-            console.log(err);
+            logger.info('error occured on daily data sync');
+            logger.error(err);
         }
 
         const insertTdSql = `
