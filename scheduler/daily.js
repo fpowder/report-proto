@@ -1,29 +1,31 @@
+import axios from 'axios';
 import { scheduleJob } from 'node-schedule';
-import { getDayStartEnd } from '../common/utils.js';
+import { yesterdayStartEnd, isUtcHandler } from '../common/utils.js';
 import { url, tdPath, illegalPath } from '../config/source.js';
 
 import promisePool from '../config/mariaDBConn.js';
 
 import { logger } from '../logger.js';
 
-const subSeconds = 1;
 export const dailySyncJob = () => {
-    scheduleJob('0 0 * * *', async () => {
+    // scheduleJob('0 0 * * *', async () => {
+    scheduleJob('34 * * * *', async () => {
         let dailyTd;
         let dailyIllegal;
 
         // get data from server
         try {
-            const prevDayStartEnd = getDayStartEnd(new Date(), subSeconds);
+            const prevDayStartEnd = yesterdayStartEnd();
             const start = prevDayStartEnd.sod;
             const end = prevDayStartEnd.eod;
 
-            dailyTd = await axios.get(`${url}${tdPath}`, { params: { start, end } }).data;
-            dailyIllegal = await axios.get(`${url}${illegalPath}`, {
+            dailyTd = (await axios.get(`${url}${tdPath}`, { params: { start, end } })).data;
+            dailyIllegal = (await axios.get(`${url}${illegalPath}`, {
                 params: { start, end },
-            }).data;
+            })).data;
         } catch (err) {
             console.log('error occured on daily data sync');
+            console.log(err);
         }
 
         const insertTdSql = `

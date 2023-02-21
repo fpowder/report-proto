@@ -667,7 +667,7 @@ const adjustCell = (dimension, pixelSize, startIndex, endIndex) => {
 }
 
 const weekTotalData = async (date) => {
-  const tdDataSet = await createTotalWeek(date);
+  const tdDataSet = await createTotalWeek();
 
   const hourDataSet = tdDataSet.hour;
   const totalDataSet = tdDataSet.total;
@@ -701,8 +701,8 @@ const weekTotalData = async (date) => {
   return data;
 }
 
-const weekInsData = async(insNo, positionOrder, date) => {
-  const tdDataSet = await createInsWeek(insNo, date);
+const weekInsData = async(insNo, positionOrder) => {
+  const tdDataSet = await createInsWeek(insNo);
 
   const hourDataSet = tdDataSet.hour;
   const totalDataSet = tdDataSet.total;

@@ -2,15 +2,15 @@ import promisePool from '../config/mariaDBConn.js';
 import { insMeta } from '../spreadsheetConf/area.js';
 import { getWeekStartEnd } from '../common/utils.js';
 
-export const createTotalWeek = async(date) => {
+export const createTotalWeek = async() => {
 
-    // const weekStartEnd = getWeekStartEnd(date);
-    // const sow = weekStartEnd.sow;
-    // const eow = weekStartEnd.eow;
+    const weekStartEnd = getWeekStartEnd();
+    const sow = weekStartEnd.sow;
+    const eow = weekStartEnd.eow;
 
     // test date
-    const sow = '2023-01-13 00:00:00';
-    const eow = '2023-01-19 23:59:59';
+    // const sow = '2023-01-13 00:00:00';
+    // const eow = '2023-01-19 23:59:59';
     
     let tdSql = `
         SELECT
@@ -113,14 +113,14 @@ export const createTotalWeek = async(date) => {
 
 }
 
-export const createInsWeek = async (insNo, date) => {
-  // const weekStartEnd = getWeekStartEnd(date);
-  // const sow = weekStartEnd.sow;
-  // const eow = weekStartEnd.eow;
+export const createInsWeek = async (insNo) => {
+  const weekStartEnd = getWeekStartEnd();
+  const sow = weekStartEnd.sow;
+  const eow = weekStartEnd.eow;
 
   // test date
-  const sow = '2023-01-13 00:00:00';
-  const eow = '2023-01-19 23:59:59';
+  // const sow = '2023-01-13 00:00:00';
+  // const eow = '2023-01-19 23:59:59';
 
   /**
    * 주의

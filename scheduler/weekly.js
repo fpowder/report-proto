@@ -12,20 +12,19 @@ import { logger } from '../logger.js';
 
 const __dirname = path.resolve();
 
-const subSeconds = 300;
 export const weeklyReportCreateJob = () => {
     // scheduleJob(`${subSeconds / 60} 0 * * 1`, async() => {
-    scheduleJob(`02 * * * *`, async() => {
+    scheduleJob(`35 * * * *`, async() => {
 
         const date = new Date();
         // for set fileName and directory name
-        const weekStartEnd = getWeekStartEndDate(date, subSeconds);
+        const weekStartEnd = getWeekStartEndDate();
         // const start = weekStartEnd.sow;
         // const end = weekStartEnd.eow;
         const year = weekStartEnd.year;
         const month = weekStartEnd.month;
 
-        const weekStartEnd2 = getWeekStartEndDate2(date, subSeconds);
+        const weekStartEnd2 = getWeekStartEndDate2();
         const fileName = `${weekStartEnd2.sow}~${weekStartEnd2.eow}`;
 
         if(!fs.existsSync(path.resolve(__dirname, `./xlsx/${year}`))) {
