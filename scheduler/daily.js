@@ -9,8 +9,8 @@ import { logger } from '../logger.js';
 
 export const dailySyncJob = () => {
     // 매일 00시 00분
-    scheduleJob('0 0 * * *', async () => {
-    // scheduleJob('34 * * * *', async () => {
+    // scheduleJob('0 0 * * *', async () => {
+    scheduleJob(`33 * * * *`, async () => {
         let dailyTd;
         let dailyIllegal;
 
@@ -30,13 +30,13 @@ export const dailySyncJob = () => {
         }
 
         const insertTdSql = `
-                INSERT INTO traffic_data 
+                INSERT IGNORE INTO traffic_data 
                     (no, ins_no, cctv_no, c_density_in, c_density_out, ped_count, car_out_count, ped_out_count, car_count, p_density, uptime) 
                 VALUES ?;
             `;
 
         const insertIllegalSql = `
-                INSERT INTO illegal_parking_table 
+                INSERT IGNORE INTO illegal_parking_table 
                     (i_no, i_ins_no, cctv_no, illegal_in_time, illegal_out_time) 
                 VALUES ?;
             `;
@@ -92,10 +92,14 @@ export const dailySyncJob = () => {
                     eachRow.i_ins_no,
                     eachRow.cctv_no,
                     (() => {
-                        return isUtcHandler(eachRow.illegal_in_time);
+                        if (eachRow.illegal_in_time) {
+                          return isUtcHandler(eachRow.illegal_in_time);
+                        } else return null;
                     })(),
                     (() => {
-                        return isUtcHandler(eachRow.illegal_out_time);
+                        if(eachRow.illegal_in_time) {
+                            return isUtcHandler(eachRow.illegal_out_time);
+                        } else return null;
                     })()
                 );
                 mtstParam.push(value);

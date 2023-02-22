@@ -1,13 +1,12 @@
 import { 
-    startOfWeek, endOfWeek, subMilliseconds, 
-    fromUnixTime, getUnixTime,
-    getYear, getMonth, parseISO,
+    startOfWeek, endOfWeek, format,
+    getYear, parseISO,
     startOfYesterday, endOfYesterday 
 } from 'date-fns';
 import dateFnsTz from 'date-fns-tz';
 // import { scheduleJob } from 'node-schedule';
 
-const { utcToZonedTime, format } = dateFnsTz;
+const { utcToZonedTime } = dateFnsTz;
 const timeZone = 'Asia/Seoul';
 const dataPattern = 'yyyy-MM-dd HH:mm:ss';
 const innerCellPattern = 'yyyy. MM. dd.';
@@ -33,11 +32,13 @@ export const getWeekStartEnd = () => {
     const sowStr = format(sow, dataPattern, { timeZone: timeZone });
     const eowStr = format(eow, dataPattern, { timeZone: timeZone });
 
+    const month = format(sow, 'M');
+
     return {
         sow: sowStr,
         eow: eowStr,
         year: getYear(sow),
-        month: getMonth(sow)
+        month: parseInt(month)
     }
 }
 
@@ -58,11 +59,13 @@ export const getWeekStartEndDate = () => {
     const sowStr = format(sow, innerCellPattern, { timeZone: timeZone });
     const eowStr = format(eow, innerCellPattern, { timeZone: timeZone });
 
+    const month = format(sow, 'M');
+
     return {
         sow: sowStr,
         eow: eowStr,
         year: getYear(sow),
-        month: getMonth(sow)
+        month: parseInt(month)
     }
 }
 
@@ -76,11 +79,13 @@ export const getWeekStartEndDate2 = () => {
     const sowStr = format(sow, filenamePattern, { timeZone: timeZone });
     const eowStr = format(eow, filenamePattern, { timeZone: timeZone });
 
+    const month = format(sow, 'M');
+
     return {
         sow: sowStr,
         eow: eowStr,
         year: getYear(sow),
-        month: getMonth(sow)
+        month: parseInt(month)
     };
 };
 
@@ -113,9 +118,6 @@ export const isUtcHandler = (dateStr) => {
     } else return dateStr;
 }
 
-// (() =>{
-//     console.log(yesterdayStartEnd());
-// })();
 
 /* (() => {
     // 일요일 테스트

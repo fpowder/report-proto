@@ -14,10 +14,9 @@ const __dirname = path.resolve();
 
 export const weeklyReportCreateJob = () => {
     // 매주 월요일 00시 05분
-    scheduleJob(`5 0 * * 1`, async() => {
-    // scheduleJob(`35 * * * *`, async() => {
+    // scheduleJob(`5 0 * * 1`, async() => {
+    scheduleJob(`34 * * * *`, async() => {
 
-        const date = new Date();
         // for set filename and directory name
         const weekStartEnd = getWeekStartEndDate();
         // const start = weekStartEnd.sow;
@@ -76,7 +75,7 @@ export const weeklyReportCreateJob = () => {
         valueData.push(...reqParams.menu.value);
 
         // set term
-        const startEndDate = getWeekStartEndDate(date, 300);
+        const startEndDate = getWeekStartEndDate();
         batchData.push(...reqParams.setTerm(startEndDate).frame);
         valueData.push(...reqParams.setTerm(startEndDate).value);
 
@@ -125,12 +124,12 @@ export const weeklyReportCreateJob = () => {
 
         // data insert
         // 주간 종합 데이터
-        valueData.push(...(await reqParams.weekTotalData(date)));
+        valueData.push(...(await reqParams.weekTotalData()));
         // 개소별 데이터 1 ~ 13
         for (let insNo = 1; insNo <= cnt; insNo++) {
           const positionOrder = insNo;
           valueData.push(
-            ...(await reqParams.weekInsData(insNo, positionOrder, date))
+            ...(await reqParams.weekInsData(insNo, positionOrder))
           );
         }
 
