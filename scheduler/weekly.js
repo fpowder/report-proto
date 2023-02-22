@@ -16,8 +16,6 @@ const __dirname = path.resolve();
 export const weeklyReportCreateJob = () => {
     // 매주 월요일 00시 05분
     scheduleJob(`5 0 * * 1`, async() => {
-    // scheduleJob(`07 * * * *`, async() => {
-
         // for set filename and directory name
         const weekStartEnd = getWeekStartEndDate();
         // const start = weekStartEnd.sow;
