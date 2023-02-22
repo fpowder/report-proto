@@ -1,3 +1,4 @@
+import { area } from '../config/app.js';
 import { scheduleJob } from 'node-schedule';
 import { getWeekStartEndDate, getWeekStartEndDate2 } from '../common/utils.js';
 import { apiInstance } from '../GoogleAPIs.js';
@@ -15,7 +16,7 @@ const __dirname = path.resolve();
 export const weeklyReportCreateJob = () => {
     // 매주 월요일 00시 05분
     // scheduleJob(`5 0 * * 1`, async() => {
-    scheduleJob(`52 * * * *`, async() => {
+    scheduleJob(`07 * * * *`, async() => {
 
         // for set filename and directory name
         const weekStartEnd = getWeekStartEndDate();
@@ -25,7 +26,7 @@ export const weeklyReportCreateJob = () => {
         const month = weekStartEnd.month;
 
         const weekStartEnd2 = getWeekStartEndDate2();
-        const filename = `${weekStartEnd2.sow}~${weekStartEnd2.eow}`;
+        const filename = `${area}_${weekStartEnd2.sow}~${weekStartEnd2.eow}`;
 
         if(!fs.existsSync(path.resolve(__dirname, `./xlsx/${year}`))) {
           fs.mkdirSync(path.resolve(__dirname, `./xlsx/${year}`));

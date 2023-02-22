@@ -10,7 +10,7 @@ const { utcToZonedTime } = dateFnsTz;
 const timeZone = 'Asia/Seoul';
 const dataPattern = 'yyyy-MM-dd HH:mm:ss';
 const innerCellPattern = 'yyyy. MM. dd.';
-const filenamePattern = 'yyyy-MM-dd';
+const filenamePattern = 'yyyy.MM.dd';
 
 
 /**
