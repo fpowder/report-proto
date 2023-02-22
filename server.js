@@ -8,6 +8,7 @@ import reportRouter from './router/report.js';
 import asyncify from 'express-asyncify';
 import fs from 'fs';
 import path from 'path';
+import bodyParser from 'body-parser';
 
 import { dailySyncJob } from './scheduler/daily.js';
 import { weeklyReportCreateJob } from './scheduler/weekly.js';
@@ -16,6 +17,8 @@ const port = 8082;
 
 const app = asyncify(express());
 // const app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // create xlsx folder create if not exist
 const __dirname = path.resolve();

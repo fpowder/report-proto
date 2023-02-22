@@ -51,17 +51,17 @@ export const dailySyncJob = () => {
                 value.push(
                     (() => {
                         if (typeof eachRow.ins_no === 'string') {
-                        return parseInt(eachRow.ins_no);
+                            return parseInt(eachRow.ins_no);
                         }
-                        return eachRow.ins_no;
+                            return eachRow.ins_no;
                     })()
                 );
                 value.push(
                     (() => {
                         if (typeof eachRow.cctv_no === 'string') {
-                        return parseInt(eachRow.cctv_no);
+                            return parseInt(eachRow.cctv_no);
                         }
-                        return eachRow.cctv_no;
+                            return eachRow.cctv_no;
                     })()
                 );
                 value.push(

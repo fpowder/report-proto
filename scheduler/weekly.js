@@ -77,8 +77,8 @@ export const weeklyReportCreateJob = () => {
 
         // set term
         const startEndDate = getWeekStartEndDate();
-        batchData.push(...reqParams.setTerm(startEndDate).frame);
-        valueData.push(...reqParams.setTerm(startEndDate).value);
+        batchData.push(...reqParams.term(startEndDate).frame);
+        valueData.push(...reqParams.term(startEndDate).value);
 
         // set collection 1.시스템 점검(상태) 내용
         batchData.push(...reqParams.systemCollection.frame);

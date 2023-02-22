@@ -13,8 +13,7 @@ import {
   gap,
   sheet
 } from './properties.js';
-import { getWeekStartEndDate } from '../common/utils.js';
-import { createInsWeek, createTotalWeek } from '../spreadSheetData/data.js';
+import { createInsWeek, createTotalWeek, createInsWeekByTerm, createTotalWeekByTerm } from '../spreadSheetData/data.js';
 import { createSeries } from './utils.js';
 
 const sheetId = sheet.sheetId;
@@ -24,7 +23,7 @@ const sheetTitle = sheet.sheetTitle;
  * 1. 프레임 (셀 병합 및 범위) 처리 요청
  * 2. 테두리 처리 요청
  */
-const createCategoryFrame = (positionOrder) => {
+const categoryFrame = (positionOrder) => {
 
   // 셀 병합요청 파라메터
   const mergeCells = {
@@ -84,7 +83,7 @@ const createCategoryFrame = (positionOrder) => {
  * 1. 프레임 (셀 병합 및 범위) 처리 요청
  * 2. 테두리 처리 요청
  */
-const createGraphFrame = (positionOrder) => {
+const graphFrame = (positionOrder) => {
   // 셀 병합요청 파라메터
   const mergeCells = {
     mergeCells: {
@@ -121,7 +120,7 @@ const createGraphFrame = (positionOrder) => {
   return [mergeCells, updateBorders];
 };
 
-const createDataFrame = (positionOrder) => {
+const dataFrame = (positionOrder) => {
   const updateBorders = {
     updateBorders: {
       range: {
@@ -147,7 +146,7 @@ const createDataFrame = (positionOrder) => {
  * 개소 이름 예) 주간 종합,개소 1, 개소 2, ......
  * 데이터 카테고리 : 보행자 통행량, 차량 통행량, 불법주정차
  */
-const setCategoryValues = (positionOrder) => {
+const categoryValues = (positionOrder) => {
   const data = [];
   const basedIndex = startRowIndex + 1 + positionOrder * gap * 3;
 
@@ -191,7 +190,7 @@ const setCategoryValues = (positionOrder) => {
  *  그래프 영역
  *  개소 이름 카테고리 텍스트
  */
-const setGraphCategoryValues = (positionOrder) => {
+const graphCategoryValues = (positionOrder) => {
   const data = [];
   const basedIndex = startGraphRowIndex + 1 + positionOrder * graphRowOffset;
 
@@ -217,7 +216,7 @@ const setGraphCategoryValues = (positionOrder) => {
 /**
  * 시간별 : 00 ~ 01, 01 ~ 02, 02 ~ 03..... 23 ~ 00
  */
-const setTimeRange = (positionOrder) => {
+const timeRange = (positionOrder) => {
 
   const basedIndex = startRowIndex + positionOrder * gap * 3;
 
@@ -377,7 +376,7 @@ const setTitle = () => {
 /**
  * 데이터 기간 제목영역 스타일 및 기간삽입 요청
  */
-const setTerm = (weekStartEndDate) => {
+const term = (weekStartEndDate) => {
   const termRange = {
     sheetId,
     startRowIndex: 2,
@@ -501,7 +500,7 @@ const setMenu = () => {
 /**
  * 데이터 입력 부분 영역 우측 정렬
  */
-const setDataAlignRight = (positionOrder) => {
+const dataAlignRight = (positionOrder) => {
 
   const basedIndex = startRowIndex + positionOrder * gap * 3 + 1;
   const requests = [];
@@ -735,6 +734,83 @@ const weekInsData = async(insNo, positionOrder) => {
   return data;
 }
 
+const weekTotalDataByTerm = async (sow, eow) => {
+  const tdDataSet = await createTotalWeekByTerm(sow, eow);
+
+  const hourDataSet = tdDataSet.hour;
+  const totalDataSet = tdDataSet.total;
+
+  const positionOrder = 0;
+  const basedIndex = startRowIndex + 1 + positionOrder * gap * 3;
+
+  const data = [];
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1}:L${basedIndex + 1 + 2}`,
+    majorDimension: 'ROWS',
+    values: hourDataSet[0],
+  });
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1 + gap}:L${
+      basedIndex + 1 + gap + 2
+    }`,
+    majorDimension: 'ROWS',
+    values: hourDataSet[1],
+  });
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1 + gap * 2}:L${
+      basedIndex + 1 + gap * 2 + 2
+    }`,
+    majorDimension: 'ROWS',
+    values: hourDataSet[2],
+  });
+
+  data.push({
+    range: `${sheetTitle}!C${basedIndex + 1}:C${basedIndex + 1 + 2}`,
+    majorDimension: 'ROWS',
+    values: totalDataSet,
+  });
+
+  return data;
+};
+
+const weekInsDataByTerm = async (insNo, positionOrder, sow, eow) => {
+  const tdDataSet = await createInsWeekByTerm(insNo, sow, eow);
+
+  const hourDataSet = tdDataSet.hour;
+  const totalDataSet = tdDataSet.total;
+
+  const basedIndex = startRowIndex + 1 + positionOrder * gap * 3;
+
+  const data = [];
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1}:L${basedIndex + 1 + 2}`,
+    majorDimension: 'ROWS',
+    values: hourDataSet[0],
+  });
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1 + gap}:L${
+      basedIndex + 1 + gap + 2
+    }`,
+    majorDimension: 'ROWS',
+    values: hourDataSet[1],
+  });
+  data.push({
+    range: `${sheetTitle}!E${basedIndex + 1 + gap * 2}:L${
+      basedIndex + 1 + gap * 2 + 2
+    }`,
+    majorDimension: 'ROWS',
+    values: hourDataSet[2],
+  });
+
+  data.push({
+    range: `${sheetTitle}!C${basedIndex + 1}:C${basedIndex + 1 + 2}`,
+    majorDimension: 'ROWS',
+    values: totalDataSet,
+  });
+
+  return data;
+};
+
 const lineChart = (positionOrder) => {
   const data = [];
 
@@ -820,20 +896,22 @@ const lineChart = (positionOrder) => {
 }
 
 export const reqParams = {
-  categoryFrame: createCategoryFrame,
-  graphFrame: createGraphFrame,
-  dataFrame: createDataFrame,
-  categoryValues: setCategoryValues,
-  timeRange: setTimeRange,
-  graphCategoryValues: setGraphCategoryValues,
-  adjustCell: adjustCell,
-  weekTotalData: weekTotalData,
-  weekInsData: weekInsData,
-  dataAlignRight: setDataAlignRight,
-  lineChart: lineChart,
+  categoryFrame,
+  graphFrame,
+  dataFrame,
+  categoryValues,
+  timeRange,
+  graphCategoryValues,
+  adjustCell,
+  weekTotalData,
+  weekInsData,
+  dataAlignRight,
+  lineChart,
+  term,
   centerAlign: centerAlign(),
-  setTerm: setTerm,
   title: setTitle(),
   menu: setMenu(),
   systemCollection: setSystemCollection(),
+  weekTotalDataByTerm,
+  weekInsDataByTerm,
 };
