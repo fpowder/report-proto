@@ -10,7 +10,7 @@ import { logger } from '../logger.js';
 export const dailySyncJob = () => {
     // 매일 00시 00분
     // scheduleJob('0 0 * * *', async () => {
-    scheduleJob(`33 * * * *`, async () => {
+    scheduleJob(`51 * * * *`, async () => {
         let dailyTd;
         let dailyIllegal;
 
